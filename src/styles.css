@@ -1,0 +1,137 @@
+@import 'tailwindcss';
+
+/*
+  Cedrina Farm design tokens. A warm cream page, a deep wine maroon for the
+  hillside arch and dark bands, and a bright citrus flame for display type and
+  fills. Text-bearing variants (flame-ink, flame-text) are darker than the
+  display flame so small type passes WCAG AA.
+*/
+@theme {
+  --font-serif: 'Playfair Display', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --color-cream: #f6ece2;
+  --color-cream-2: #efe0d1;
+  --color-paper: #fbf6f0;
+  --color-line: #e3cfbd;
+  --color-line-strong: #c9ab93;
+  --color-wine: #5c1724;
+  --color-maroon: #76212f;
+  --color-maroon-deep: #3e0f18;
+  --color-maroon-soft: #8f3443;
+  --color-ink: #33141a;
+  --color-muted: #6e4e4f;
+  --color-on-dark: #f6ece2;
+  --color-on-dark-muted: #d9bfb8;
+  --color-flame: #f0521f;
+  --color-flame-ink: #c63c0f;
+  --color-flame-text: #b0360c;
+  --color-flame-soft: #fbd9c8;
+  --color-flame-light: #ff7a4a;
+  --color-olive: #3f5d2a;
+  --color-success: #2f6b2c;
+  --color-danger: #b3261e;
+
+  --radius-control: 999px;
+  --radius-field: 14px;
+  --radius-card: 22px;
+  --radius-panel: 32px;
+  --radius-arch: 999px 999px 22px 22px;
+
+  --shadow-pill: 0 6px 18px -6px rgb(62 15 24 / 0.35);
+  --shadow-card: 0 18px 40px -24px rgb(62 15 24 / 0.45);
+  --shadow-jar: 0 40px 50px -30px rgb(30 6 10 / 0.55);
+  --shadow-drawer: -30px 0 80px -20px rgb(30 6 10 / 0.5);
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-bob: bob 6s ease-in-out infinite;
+  --animate-rise: rise 0.8s var(--ease-out-soft) both;
+  --animate-fade: fade 0.5s ease-out both;
+  --animate-spin-slow: spin 60s linear infinite;
+  --animate-pulse-dot: pulse-dot 1.8s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+
+  @keyframes bob {
+    0%, 100% { translate: 0 0; }
+    50% { translate: 0 -10px; }
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.6; }
+  }
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
+}
+
+@layer base {
+  html {
+    background: var(--color-maroon-deep);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-cream);
+    min-height: 100svh;
+  }
+  ::selection {
+    background: var(--color-flame);
+    color: #fff;
+  }
+  :focus-visible,
+  [data-force~='focus'] {
+    outline: 2px solid var(--color-flame-ink);
+    outline-offset: 3px;
+  }
+  .on-dark :focus-visible,
+  .on-dark[data-force~='focus'] {
+    outline-color: var(--color-on-dark);
+  }
+  button,
+  [role='button'] {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  input[type='number']::-webkit-inner-spin-button {
+    appearance: none;
+  }
+}
+
+@utility skeleton {
+  background: linear-gradient(90deg, var(--color-cream-2) 0%, var(--color-paper) 50%, var(--color-cream-2) 100%);
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Hover and pressed variants that the style guide can pin with data-force. */
+@custom-variant hov (&:hover:not(:disabled), &[data-force~='hover']);
+@custom-variant press (&:active:not(:disabled), &[data-force~='pressed']);
