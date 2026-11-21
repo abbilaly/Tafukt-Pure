@@ -1,7 +1,7 @@
 {
   "entrypoint": "index.js",
   "compatibilityDate": "2026-09-29",
-  "modules": [{ "name": "index.js", "type": "esm", "path": "./dist/farm_produce/index.js" }],
+  "modules": [{ "name": "index.js", "type": "esm", "path": "./dist/tafukt_pure/index.js" }],
   "assetsDirectory": "./dist/client",
   "spa": true
 }

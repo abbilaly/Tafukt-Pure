@@ -6,4 +6,5 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react(), tailwindcss(), cloudflare()],
   server: { port: 5368, strictPort: false },
+  build: { sourcemap: false },
 })
