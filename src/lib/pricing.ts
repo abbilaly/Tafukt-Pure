@@ -8,8 +8,8 @@ export const MAX_QTY = 12
 
 /** Promo codes the Worker accepts. Replace with your commerce backend. */
 export const PROMOS: Record<string, { percent: number; label: string }> = {
-  CEDRINA10: { percent: 10, label: '10% off your order' },
-  BENVENUTO: { percent: 15, label: '15% off your first order' },
+  TAFUKT10: { percent: 10, label: '10% off your order' },
+  MARHABA: { percent: 15, label: '15% off your first order' },
 }
 
 export const productBySlug = (slug: string): Product | undefined => products.find((p) => p.slug === slug)

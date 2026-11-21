@@ -30,13 +30,13 @@ export function Farm() {
       </Container>
 
       <div className="relative">
-        <img src={img('farm-hill')} alt="The farmhouse and its stone terraces of citrus and olive above the sea" className="h-[60vh] min-h-[360px] w-full object-cover" />
+        <img src={img('farm-hill')} alt="A farmhouse and its stone terraces on a Moroccan hillside" className="h-[60vh] min-h-[360px] w-full object-cover" />
       </div>
 
       <section className="py-24 md:py-32">
         <Container className="grid gap-16 lg:grid-cols-[0.8fr_1.2fr]">
           <div className="lg:sticky lg:top-10 lg:self-start">
-            <img src={img('harvest')} alt="Hands picking a lemon into a wicker basket" loading="lazy" className="aspect-[3/4] w-full rounded-[999px_999px_22px_22px] object-cover" />
+            <img src={img('harvest')} alt="Hands picking fruit into a wicker basket" loading="lazy" className="aspect-[3/4] w-full rounded-[999px_999px_22px_22px] object-cover" />
           </div>
           <ol className="relative border-s-[1.5px] border-line-strong ps-8 md:ps-12">
             {farm.timeline.map((t) => (
@@ -68,13 +68,13 @@ export function Farm() {
 
       <section id="visit" className="scroll-mt-6 py-24 md:py-32">
         <Container className="grid gap-12 lg:grid-cols-2 lg:items-center">
-          <img src={img('kitchen')} alt="Rows of freshly filled jars cooling on the farmhouse kitchen table" loading="lazy" className="aspect-[3/2] w-full rounded-card object-cover" />
+          <img src={img('kitchen')} alt="Rows of freshly filled jars on the workshop table" loading="lazy" className="aspect-[3/2] w-full rounded-card object-cover" />
           <div>
             <Eyebrow>{ui.visitEyebrow}</Eyebrow>
             <h2 className="mt-4 font-serif text-[40px] leading-tight text-wine md:text-[52px]">{farm.kitchenTitle}</h2>
             <p className="mt-5 text-[17px] leading-relaxed text-muted">{farm.kitchenBody}</p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href={`mailto:${brand.email}?subject=Visiting%20the%20farm`} className="inline-flex h-11 items-center rounded-control bg-flame-ink px-6 text-[14px] font-semibold text-white transition-colors hover:bg-wine">
+              <a href={`mailto:${brand.email}?subject=TAFUKT%20PURE`} className="inline-flex h-11 items-center rounded-control bg-flame-ink px-6 text-[14px] font-semibold text-white transition-colors hover:bg-wine">
                 {farm.visitCta}
               </a>
               <Button to="/shop" variant="outline">

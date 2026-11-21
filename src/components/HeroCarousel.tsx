@@ -114,7 +114,7 @@ export function HeroCarousel({ onScroll }: { onScroll: () => void }) {
       {/* The ring of curved type, centred below the hill's peak. */}
       <div aria-hidden className="pointer-events-none absolute" style={{ left: px(frame.W / 2 - (narrow ? 0 : 43)), top: py(ringCy), transform: `translate(-50%, -50%) scale(${u})` }}>
         <motion.div key={featured.slug} initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
-          <CurvedText text={`${featured.ring}CEDRINA · `} radius={ringR} size={ringSize} rotate={turn - 90} />
+          <CurvedText text={`${featured.ring}TAFUKT PURE · `} radius={ringR} size={ringSize} rotate={turn - 90} />
         </motion.div>
       </div>
 

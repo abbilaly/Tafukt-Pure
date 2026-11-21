@@ -33,12 +33,11 @@ export function Jar({ product, className, eager, alt, speak }: { product: Produc
 
 /** A jar standing on its label-coloured tile. */
 export function JarTile({ product, className, tilt = 0, eager }: { product: Product; className?: string; tilt?: number; eager?: boolean }) {
-  const box = product.category === 'Citrus'
   return (
     <div className={cx('relative grid place-items-center overflow-hidden [container-type:size]', className)} style={{ background: product.tint }}>
       <span aria-hidden className="absolute inset-x-[12%] bottom-[-30%] aspect-square rounded-full bg-white/25" />
-      <span className="jar relative transition-transform duration-500 ease-out drop-shadow-[0_24px_24px_rgb(40_8_14/0.28)]" style={{ rotate: `${tilt}deg` }}>
-        <Jar product={product} eager={eager} className={box ? 'w-[78cqw]' : 'h-[72cqh]'} />
+      <span className="jar relative transition-transform duration-500 ease-out drop-shadow-[0_24px_24px_rgb(35_43_24/0.28)]" style={{ rotate: `${tilt}deg` }}>
+        <Jar product={product} eager={eager} className="h-[72cqh]" />
       </span>
     </div>
   )

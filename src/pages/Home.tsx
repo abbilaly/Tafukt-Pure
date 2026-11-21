@@ -18,7 +18,7 @@ export function Home() {
   const { home, categories, products, recipes } = useContent()
   const stock = useStock()
   const next = useRef<HTMLDivElement>(null)
-  const best = ['smeraldo', 'gelsi-neri', 'pesto-rosso', 'arance-a-fette'].map((s) => products.find((p) => p.slug === s)!)
+  const best = ['amlou-beldi', 'miel-thym', 'chebakia', 'argan-grille'].map((s) => products.find((p) => p.slug === s)!)
   return (
     <>
       <HeroCarousel onScroll={() => next.current?.scrollIntoView({ behavior: 'smooth' })} />
@@ -85,7 +85,7 @@ export function Home() {
 
       <section className="on-dark bg-maroon-deep text-on-dark">
         <div className="grid md:grid-cols-2">
-          <img src={img('farm-hill')} alt="Stone terraces of citrus and olive trees above the sea at sunset" loading="lazy" className="h-[420px] w-full object-cover md:h-full md:min-h-[640px]" />
+          <img src={img('farm-hill')} alt="Stone terraces and olive trees on a Moroccan hillside at sunset" loading="lazy" className="h-[420px] w-full object-cover md:h-full md:min-h-[640px]" />
           <div className="flex flex-col justify-center px-4 py-20 md:px-16 lg:px-24">
             <SectionHeading eyebrow={home.story.eyebrow} title={home.story.title} dark>
               <p>{home.story.body}</p>
