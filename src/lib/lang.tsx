@@ -32,7 +32,7 @@ function initialLang(): Lang {
 }
 
 export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = usePersistent<Lang>('cedrina-lang', initialLang(), isLang)
+  const [lang, setLang] = usePersistent<Lang>('tafukt-lang', initialLang(), isLang)
   const dir: Direction = lang === 'ar' ? 'rtl' : 'ltr'
 
   useEffect(() => {

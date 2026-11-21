@@ -13,7 +13,7 @@ import { useStore } from '../lib/store'
 import { useTitle } from '../lib/title'
 
 type Contact = { name: string; email: string; address: string; city: string; postcode: string; country: string; note: string }
-const blank: Contact = { name: '', email: '', address: '', city: '', postcode: '', country: 'Italy', note: '' }
+const blank: Contact = { name: '', email: '', address: '', city: '', postcode: '', country: 'Morocco', note: '' }
 
 export function Bag() {
   const store = useStore()

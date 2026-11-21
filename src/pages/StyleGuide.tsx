@@ -29,7 +29,7 @@ export function StyleGuide() {
   const [opt, setOpt] = useState('a')
   return (
     <Container className="pb-24 pt-12">
-      <SectionHeading as="h1" eyebrow="Design system" title="Cedrina style guide">
+      <SectionHeading as="h1" eyebrow="Design system" title="TAFUKT PURE style guide">
         <p>Tokens and components, rendered by the same code the shop uses. Hover, focus and pressed states are pinned with data-force.</p>
       </SectionHeading>
       <nav aria-label="Style guide sections" className="mt-8 flex flex-wrap gap-2">
@@ -229,14 +229,14 @@ export function StyleGuide() {
 
       <Block id="fields" title="Fields">
         <div className="grid max-w-3xl gap-4 sm:grid-cols-2">
-          <Input label="Default" placeholder="Giulia Rossi" />
+          <Input label="Default" placeholder="Yasmine El Amrani" />
           <Input label="Hover" placeholder="Pinned hover" force="hover" />
           <Input label="Focus" placeholder="Pinned focus" force="focus" />
           <Input label="With hint" hint="We send tracking here." placeholder="you@example.com" />
-          <Input label="Error" error="Enter a valid email address." defaultValue="giulia@" />
+          <Input label="Error" error="Enter a valid email address." defaultValue="yasmine@" />
           <Input label="Disabled" disabled defaultValue="Collect at the farm" />
-          <Select label="Select" defaultValue="Italy">
-            <option>Italy</option>
+          <Select label="Select" defaultValue="Morocco">
+            <option>Morocco</option>
             <option>France</option>
           </Select>
           <Textarea label="Textarea" placeholder="A note for the gift card" />
@@ -247,7 +247,7 @@ export function StyleGuide() {
         <div className="flex flex-wrap gap-2">
           <Badge>Bestseller</Badge>
           <Badge tone="wine">Sold out</Badge>
-          <Badge tone="olive">Burrata</Badge>
+          <Badge tone="olive">Argan</Badge>
           <Badge tone="cream">Only 4 left</Badge>
         </div>
         <div className="mt-6 grid max-w-2xl gap-3">
@@ -274,8 +274,8 @@ export function StyleGuide() {
       <Block id="cards" title="Cards and tiles">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <ProductCard product={products[0]} />
-          <ProductCard product={products[1]} stock={{ status: 'ready', stock: { 'gelsi-neri': 4 } }} />
-          <ProductCard product={products[6]} stock={{ status: 'ready', stock: { caponata: 0 } }} />
+          <ProductCard product={products[1]} stock={{ status: 'ready', stock: { [products[1].slug]: 4 } }} />
+          <ProductCard product={products[6]} stock={{ status: 'ready', stock: { [products[6].slug]: 0 } }} />
           <RecipeCard recipe={recipes[0]} />
         </div>
         <div className="mt-6 grid grid-cols-3 gap-4 sm:grid-cols-6">
