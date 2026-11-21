@@ -1,36 +1,40 @@
 @import 'tailwindcss';
 
 /*
-  Cedrina Farm design tokens. A warm cream page, a deep wine maroon for the
-  hillside arch and dark bands, and a bright citrus flame for display type and
-  fills. Text-bearing variants (flame-ink, flame-text) are darker than the
-  display flame so small type passes WCAG AA.
+  TAFUKT PURE design tokens. A warm cream page, a deep olive green for the
+  hillside arch and dark bands, and a muted antique gold for display type and
+  fills. The token names keep their original roles so every component reads the
+  same palette: wine and maroon are the olives, flame is the gold. Terracotta
+  is kept for selection and errors. Text-bearing variants (flame-ink,
+  flame-text) are darker than the display gold so small type passes WCAG AA.
 */
 @theme {
   --font-serif: 'Playfair Display', ui-serif, Georgia, 'Times New Roman', serif;
   --font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  --color-cream: #f6ece2;
-  --color-cream-2: #efe0d1;
-  --color-paper: #fbf6f0;
-  --color-line: #e3cfbd;
-  --color-line-strong: #c9ab93;
-  --color-wine: #5c1724;
-  --color-maroon: #76212f;
-  --color-maroon-deep: #3e0f18;
-  --color-maroon-soft: #8f3443;
-  --color-ink: #33141a;
-  --color-muted: #6e4e4f;
-  --color-on-dark: #f6ece2;
-  --color-on-dark-muted: #d9bfb8;
-  --color-flame: #f0521f;
-  --color-flame-ink: #c63c0f;
-  --color-flame-text: #b0360c;
-  --color-flame-soft: #fbd9c8;
-  --color-flame-light: #ff7a4a;
-  --color-olive: #3f5d2a;
-  --color-success: #2f6b2c;
-  --color-danger: #b3261e;
+  --color-cream: #f7f1e3;
+  --color-cream-2: #ece2cd;
+  --color-paper: #fdfaf1;
+  --color-line: #ddd0b6;
+  --color-line-strong: #c2b08c;
+  --color-wine: #2f3a22;
+  --color-maroon: #45512f;
+  --color-maroon-deep: #232b18;
+  --color-maroon-soft: #63704a;
+  --color-ink: #292a1d;
+  --color-muted: #69644f;
+  --color-on-dark: #f7f1e3;
+  --color-on-dark-muted: #d5cab0;
+  --color-flame: #b08d57;
+  --color-flame-ink: #7f6134;
+  --color-flame-text: #755831;
+  --color-flame-soft: #ece0c6;
+  --color-flame-light: #d4b483;
+  --color-olive: #4a5230;
+  --color-terracotta: #b4552d;
+  --color-terracotta-soft: #e9cdb9;
+  --color-success: #4e6b3a;
+  --color-danger: #a8442a;
 
   --radius-control: 999px;
   --radius-field: 14px;
@@ -38,10 +42,10 @@
   --radius-panel: 32px;
   --radius-arch: 999px 999px 22px 22px;
 
-  --shadow-pill: 0 6px 18px -6px rgb(62 15 24 / 0.35);
-  --shadow-card: 0 18px 40px -24px rgb(62 15 24 / 0.45);
-  --shadow-jar: 0 40px 50px -30px rgb(30 6 10 / 0.55);
-  --shadow-drawer: -30px 0 80px -20px rgb(30 6 10 / 0.5);
+  --shadow-pill: 0 6px 18px -6px rgb(35 43 24 / 0.35);
+  --shadow-card: 0 18px 40px -24px rgb(35 43 24 / 0.45);
+  --shadow-jar: 0 40px 50px -30px rgb(24 28 14 / 0.55);
+  --shadow-drawer: -30px 0 80px -20px rgb(24 28 14 / 0.5);
 
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -99,7 +103,7 @@
     min-height: 100svh;
   }
   ::selection {
-    background: var(--color-flame);
+    background: var(--color-terracotta);
     color: #fff;
   }
   :focus-visible,

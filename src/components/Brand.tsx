@@ -3,20 +3,21 @@ import { useId } from 'react'
 import { cx } from '../lib/cx'
 import { useContent } from '../lib/lang'
 
-/** The Cedrina emblem: a basket of citrus under two leaves. */
+/**
+ * The TAFUKT PURE emblem: an Amazigh sun. A gold disc carries a lozenge of
+ * carved geometry, and eight short rays echo the sun of the name (tafukt).
+ */
 export function Emblem({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 64 64" aria-hidden className={className}>
-      <path d="M32 17c-1-6 2-11 9-13-1 7-4 11-9 13Z" fill="var(--color-wine)" />
-      <path d="M31 17c-5-3-11-2-14 2 5 3 10 2 14-2Z" fill="var(--color-maroon-soft)" />
-      <path d="M32 17v6" stroke="var(--color-wine)" strokeWidth="1.6" strokeLinecap="round" />
-      <circle cx="21" cy="33" r="8" fill="var(--color-flame)" stroke="var(--color-cream)" strokeWidth="1.5" />
-      <circle cx="43" cy="33" r="8" fill="var(--color-flame)" stroke="var(--color-cream)" strokeWidth="1.5" />
-      <circle cx="32" cy="29" r="9" fill="var(--color-flame)" stroke="var(--color-cream)" strokeWidth="1.5" />
-      <circle cx="29" cy="26" r="1.6" fill="var(--color-cream)" opacity=".7" />
-      <path d="M8 36h48l-5.5 17a5 5 0 0 1-4.8 3.5H18.3a5 5 0 0 1-4.8-3.5Z" fill="var(--color-flame)" />
-      <path d="M12 42h40M14.2 48h35.6M24 36l-2 20M40 36l2 20M32 36v20" stroke="var(--color-cream)" strokeWidth="1.4" opacity=".85" />
-      <path d="M6 36h52" stroke="var(--color-wine)" strokeWidth="2.4" strokeLinecap="round" />
+      <g stroke="var(--color-flame)" strokeWidth="1.7" strokeLinecap="round">
+        <path d="M32 5.5v5M32 53.5v5M5.5 32h5M53.5 32h5" />
+        <path d="M13.5 13.5l3.5 3.5M47 47l3.5 3.5M50.5 13.5L47 17M17 47l-3.5 3.5" />
+      </g>
+      <circle cx="32" cy="32" r="15" fill="var(--color-flame-ink)" />
+      <path d="M32 21 43 32 32 43 21 32Z" fill="none" stroke="var(--color-cream)" strokeWidth="1.5" />
+      <path d="M32 26.5 37.5 32 32 37.5 26.5 32Z" fill="none" stroke="var(--color-cream)" strokeWidth="1.1" opacity=".7" />
+      <circle cx="32" cy="32" r="1.9" fill="var(--color-cream)" />
     </svg>
   )
 }
@@ -25,8 +26,8 @@ export function Wordmark({ className, dark }: { className?: string; dark?: boole
   const { brand } = useContent()
   return (
     <span className={cx('flex flex-col items-center leading-none', className)}>
-      <span className={cx('font-serif text-[25px] font-semibold uppercase tracking-[0.06em]', dark ? 'text-on-dark' : 'text-wine')}>{brand.word}</span>{' '}
-      <span className={cx('-mt-0.5 font-serif text-[19px] italic', dark ? 'text-flame' : 'text-flame-text')}>{brand.sub}</span>
+      <span className={cx('font-serif text-[24px] font-semibold uppercase tracking-[0.16em]', dark ? 'text-on-dark' : 'text-wine')}>{brand.word}</span>{' '}
+      <span className={cx('mt-1 text-[10px] font-semibold uppercase tracking-[0.52em]', dark ? 'text-flame' : 'text-flame-text')}>{brand.sub}</span>
     </span>
   )
 }
@@ -66,7 +67,7 @@ export function CurvedText({ text, radius = 440, size = 96, rotate = 0, classNam
   )
 }
 
-/** The maroon hillside behind the hero jars. */
+/** The olive hillside behind the hero jars. */
 export function Hill({ className, height }: { className?: string; height?: number }) {
   return (
     <svg viewBox="0 0 1440 640" preserveAspectRatio="none" aria-hidden className={className} style={{ height }}>

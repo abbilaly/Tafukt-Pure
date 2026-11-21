@@ -1,9 +1,9 @@
-# Cedrina Farm: farm produce shop
+# TAFUKT PURE: Moroccan natural products
 
-A storefront for a Mediterranean family farm selling jarred pestos, preserves
-and fresh citrus. The home page opens on a carousel of jars drifting over a
-maroon hillside, with a ring of curved serif type behind them. Below it: the
-farm's statement, bestsellers, shop shelves, the farm story, recipes and
+A bilingual storefront for a Moroccan house selling amlou, argan oil, raw honey
+and traditional sweets. The home page opens on a carousel of jars drifting over
+an olive hillside, with a ring of curved serif type behind them. Below it: the
+house statement, bestsellers, shop shelves, the brand story, recipes and
 promises.
 
 Screens:
@@ -27,7 +27,7 @@ localStorage.
 ```sh
 bun install
 bun run dev        # Vite + the Worker in workerd
-bun run build      # dist/client (assets) + dist/farm_produce/index.js (Worker)
+bun run build      # dist/client (assets) + dist/tafukt_pure/index.js (Worker)
 ```
 
 ## Edit it
@@ -40,12 +40,13 @@ bun run build      # dist/client (assets) + dist/farm_produce/index.js (Worker)
   printed on the jar labels in CSS (`Jar` in `src/components/Cards.tsx`,
   positioned by each product's `label.y`), so a new product needs a wordless
   label photo and a `label` entry.
-- `src/styles.css` holds the design tokens (colours, radii, shadows, motion).
-  `flame` is the bright display orange; `flame-ink` and `flame-text` are the
-  darker versions used behind and as small text so they pass WCAG AA.
+- `src/styles.css` holds the design tokens (colours, radii, shadows, motion):
+  warm ivory, natural beige, deep olive, antique gold and terracotta. `flame`
+  is the display gold; `flame-ink` and `flame-text` are the darker versions used
+  behind and as small text so they pass WCAG AA.
 - `src/components/ui.tsx` is the design system; `Chrome.tsx` the header,
   menu, bag drawer and footer; `HeroCarousel.tsx` the hero; `Brand.tsx` the
-  emblem, wordmark, hill and curved ring text.
+  sun emblem, wordmark, hill and curved ring text.
 - `src/lib/pricing.ts` computes totals and holds the promo codes; the page and
   the Worker share it.
 - `src/worker/index.ts` is the Cloudflare Worker: `GET /api/stock`,
