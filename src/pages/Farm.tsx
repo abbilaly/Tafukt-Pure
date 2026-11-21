@@ -1,11 +1,7 @@
-import { motion } from 'motion/react'
-
 import { Button, Container, Eyebrow, SectionHeading, Sprig } from '../components/ui'
 import { img } from '../content'
 import { useContent } from '../lib/lang'
 import { useTitle } from '../lib/title'
-
-const rise = { initial: { opacity: 0, y: 28 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: '-60px' }, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const } }
 
 export function Farm() {
   const { farm, brand, ui } = useContent()
@@ -38,16 +34,11 @@ export function Farm() {
           <div className="lg:sticky lg:top-10 lg:self-start">
             <img src={img('harvest')} alt="Hands picking fruit into a wicker basket" loading="lazy" className="aspect-[3/4] w-full rounded-[999px_999px_22px_22px] object-cover" />
           </div>
-          <ol className="relative border-s-[1.5px] border-line-strong ps-8 md:ps-12">
-            {farm.timeline.map((t) => (
-              <motion.li key={t.year} {...rise} className="relative pb-14 last:pb-0">
-                <span aria-hidden className="absolute -start-[39px] top-2 size-3.5 rounded-full bg-flame-ink ring-4 ring-cream md:-start-[55px]" />
-                <p className="font-serif text-[20px] italic text-flame-text">{t.year}</p>
-                <h2 className="mt-1 font-serif text-[34px] leading-tight text-wine md:text-[44px]">{t.title}</h2>
-                <p className="mt-3 max-w-xl text-[17px] leading-relaxed text-muted">{t.body}</p>
-              </motion.li>
-            ))}
-          </ol>
+          <div className="flex flex-col justify-center">
+            <Eyebrow>{farm.note.eyebrow}</Eyebrow>
+            <h2 className="mt-4 text-balance font-serif text-[34px] leading-tight text-wine md:text-[44px]">{farm.note.title}</h2>
+            <p className="mt-3 max-w-xl text-[17px] leading-relaxed text-muted">{farm.note.body}</p>
+          </div>
         </Container>
       </section>
 
