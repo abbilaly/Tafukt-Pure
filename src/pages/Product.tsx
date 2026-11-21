@@ -4,8 +4,7 @@ import { useParams } from 'react-router'
 
 import { JarTile, ProductCard, RecipeCard, stockFor } from '../components/Cards'
 import { Badge, Button, Container, Crumb, OptionCard, QtyStepper, Skeleton } from '../components/ui'
-import { productPage as copy, products, recipes } from '../content'
-import { productBySlug } from '../lib/pricing'
+import { useContent } from '../lib/lang'
 import { useStock } from '../lib/stock'
 import { useStore } from '../lib/store'
 import { useTitle } from '../lib/title'
@@ -13,14 +12,16 @@ import { NotFound } from './NotFound'
 
 export function ProductPage() {
   const { slug = '' } = useParams()
-  const product = productBySlug(slug)
-  useTitle(product?.name ?? 'Not found')
+  const { productPage: copy, product: productOf } = useContent()
+  const product = productOf(slug)
+  useTitle(product?.name ?? copy.notFound)
   if (!product) return <NotFound message={copy.notFound} />
   return <ProductView key={product.slug} slug={product.slug} />
 }
 
 function ProductView({ slug }: { slug: string }) {
-  const product = productBySlug(slug)!
+  const { productPage: copy, product: productOf, products, recipes, ui } = useContent()
+  const product = productOf(slug)!
   const { add, format, toast, setBagOpen } = useStore()
   const stock = useStock()
   const [size, setSize] = useState(product.sizes[0].id)
@@ -35,14 +36,14 @@ function ProductView({ slug }: { slug: string }) {
   const onAdd = () => {
     add(product, size, qty)
     setAdded(true)
-    toast(`${qty} × ${product.name} added to your bag`, 'success')
+    toast(`${qty} × ${ui.addedToast(product.name)}`, 'success')
     window.setTimeout(() => setAdded(false), 2200)
   }
 
   return (
     <>
       <Container className="pt-8">
-        <Crumb to="/shop">The larder</Crumb>
+        <Crumb to="/shop">{ui.theLarder}</Crumb>
       </Container>
       <Container className="grid gap-10 pb-24 pt-6 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
         <div className="lg:sticky lg:top-6 lg:self-start">
@@ -82,7 +83,7 @@ function ProductView({ slug }: { slug: string }) {
           </div>
           {added && (
             <button type="button" onClick={() => setBagOpen(true)} className="mt-3 inline-flex min-h-10 items-center self-start text-[14px] font-semibold text-flame-text underline underline-offset-4">
-              View your bag
+              {ui.viewBag}
             </button>
           )}
 
@@ -95,7 +96,9 @@ function ProductView({ slug }: { slug: string }) {
             ) : stock.status === 'error' ? (
               <span className="text-muted">{copy.inStock}</span>
             ) : soldOut ? (
-              <span className="text-danger">{copy.soldOut}. The next batch is in the pan.</span>
+              <span className="text-danger">
+                {copy.soldOut}. {ui.nextBatch}
+              </span>
             ) : n !== null && n < 6 ? (
               <span className="text-flame-text">{copy.lowStock(n)}</span>
             ) : (
@@ -121,7 +124,7 @@ function ProductView({ slug }: { slug: string }) {
               </dd>
             </div>
             <div className="grid gap-2 py-5 sm:grid-cols-[160px_1fr]">
-              <dt className="text-[13px] font-bold uppercase tracking-[0.14em] text-wine">Season</dt>
+              <dt className="text-[13px] font-bold uppercase tracking-[0.14em] text-wine">{ui.season}</dt>
               <dd className="flex items-center gap-2 text-[15px] text-muted">
                 <Leaf className="size-4 text-olive" aria-hidden /> {product.season}
               </dd>

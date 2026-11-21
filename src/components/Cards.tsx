@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 
 import { img, type Product, type Recipe } from '../content'
 import { cx } from '../lib/cx'
+import { useContent } from '../lib/lang'
 import { useStore } from '../lib/store'
 import type { StockState } from '../lib/stock'
 import { Badge, IconButton } from './ui'
@@ -23,7 +24,7 @@ export function Jar({ product, className, eager, alt, speak }: { product: Produc
           style={{ top: `${product.label.y}%`, color: product.label.color }}
         >
           <span className={cx("font-semibold tracking-[-0.01em]", product.name.length > 11 ? "text-[12cqw]" : "text-[15cqw]")}>{product.name}</span>{' '}
-          <span className="mt-[2cqw] text-[7.5cqw] italic">{product.kind}</span>
+          <span className="mt-[2cqw] text-[7.5cqw] italic">{product.kindLatin ?? product.kind}</span>
         </span>
       )}
     </span>
@@ -49,6 +50,7 @@ export function stockFor(state: StockState | undefined, slug: string): number | 
 
 export function ProductCard({ product, stock }: { product: Product; stock?: StockState }) {
   const { add, format, toast } = useStore()
+  const { ui } = useContent()
   const n = stockFor(stock, product.slug)
   const soldOut = n === 0
   const from = product.sizes[0]
@@ -57,16 +59,16 @@ export function ProductCard({ product, stock }: { product: Product; stock?: Stoc
       <div className="relative overflow-hidden rounded-card">
         <JarTile product={product} className="aspect-[4/5] [&_.jar]:group-hover:-translate-y-2 [&_.jar]:group-hover:rotate-[-3deg]" />
         <div className="absolute left-4 top-4 flex flex-wrap gap-1.5">
-          {soldOut ? <Badge tone="wine">Sold out</Badge> : n !== null && n < 6 ? <Badge tone="cream">Only {n} left</Badge> : product.badges[0] ? <Badge tone="cream">{product.badges[0]}</Badge> : null}
+          {soldOut ? <Badge tone="wine">{ui.soldOut}</Badge> : n !== null && n < 6 ? <Badge tone="cream">{ui.onlyLeft(n)}</Badge> : product.badges[0] ? <Badge tone="cream">{product.badges[0]}</Badge> : null}
         </div>
         <IconButton
-          label={soldOut ? `${product.name} is sold out` : `Add ${product.name} to bag`}
+          label={soldOut ? ui.soldOutToast(product.name) : ui.addToBag(product.name)}
           size="md"
           disabled={soldOut}
-          className="!absolute bottom-4 right-4 z-10 shadow-pill"
+          className="!absolute bottom-4 end-4 z-10 shadow-pill"
           onClick={() => {
             add(product, from.id)
-            toast(`${product.name} added to your bag`, 'success')
+            toast(ui.addedToast(product.name), 'success')
           }}
         >
           <Plus className="size-5" aria-hidden />
@@ -88,18 +90,19 @@ export function ProductCard({ product, stock }: { product: Product; stock?: Stoc
 }
 
 export function RecipeCard({ recipe, className }: { recipe: Recipe; className?: string }) {
+  const { ui } = useContent()
   return (
     <article className={cx('group relative flex flex-col', className)}>
       <div className="overflow-hidden rounded-[999px_999px_22px_22px]">
         <img src={img(recipe.image)} alt="" loading="lazy" className="aspect-[4/5] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
       </div>
       <div className="mt-4 flex items-center gap-4 text-[13px] font-semibold text-flame-text">
-        <span>{recipe.course}</span>
+        <span>{ui.courses[recipe.course]}</span>
         <span className="flex items-center gap-1">
-          <Clock className="size-3.5" aria-hidden /> {recipe.minutes} min
+          <Clock className="size-3.5" aria-hidden /> {ui.minutes(recipe.minutes)}
         </span>
         <span className="flex items-center gap-1">
-          <Users className="size-3.5" aria-hidden /> Serves {recipe.serves}
+          <Users className="size-3.5" aria-hidden /> {ui.serves(recipe.serves)}
         </span>
       </div>
       <h3 className="mt-2 font-serif text-[24px] leading-tight text-wine">

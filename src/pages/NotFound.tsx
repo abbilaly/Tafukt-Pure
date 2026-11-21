@@ -1,9 +1,10 @@
-import { Button, Container, Sprig } from "../components/ui"
-import { notFound } from '../content'
+import { Button, Container, Sprig } from '../components/ui'
+import { useContent } from '../lib/lang'
 import { useTitle } from '../lib/title'
 
 export function NotFound({ message }: { message?: string }) {
-  useTitle('Not found')
+  const { notFound, ui } = useContent()
+  useTitle(notFound.title)
   return (
     <Container className="flex min-h-[70vh] flex-col items-center justify-center py-24 text-center">
       <Sprig className="h-16 text-flame-ink" />
@@ -13,7 +14,7 @@ export function NotFound({ message }: { message?: string }) {
       <div className="mt-8 flex gap-3">
         <Button to="/">{notFound.cta}</Button>
         <Button to="/shop" variant="outline">
-          The larder
+          {ui.theLarder}
         </Button>
       </div>
     </Container>

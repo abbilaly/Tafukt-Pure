@@ -3,6 +3,7 @@ import { forwardRef, useId, type ButtonHTMLAttributes, type InputHTMLAttributes,
 import { Link } from 'react-router'
 
 import { cx } from '../lib/cx'
+import { useContent } from '../lib/lang'
 
 // Design-system primitives. Every page builds from these; the style guide
 // renders each variant and state. `data-force="hover|pressed|focus"` pins a
@@ -182,7 +183,7 @@ export function Select({ label, error, hint, className, children, ...rest }: Fie
   const id = useId()
   return (
     <Shell id={id} label={label} error={error} hint={hint} className={className}>
-      <select id={id} aria-invalid={!!error || undefined} aria-describedby={error || hint ? `${id}-msg` : undefined} className={cx(fieldCls(error), 'appearance-none bg-[url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 fill=%27none%27 stroke=%27%235c1724%27 stroke-width=%271.6%27/%3E%3C/svg%3E")] bg-[position:right_16px_center] bg-no-repeat pr-10')} {...rest}>
+      <select id={id} aria-invalid={!!error || undefined} aria-describedby={error || hint ? `${id}-msg` : undefined} className={cx(fieldCls(error), 'appearance-none bg-[url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 fill=%27none%27 stroke=%27%235c1724%27 stroke-width=%271.6%27/%3E%3C/svg%3E")] bg-[position:right_16px_center] bg-no-repeat pe-10 rtl:bg-[position:left_16px_center]')} {...rest}>
         {children}
       </select>
     </Shell>
@@ -199,16 +200,17 @@ export function Textarea({ label, error, hint, className, ...rest }: FieldShell 
 }
 
 export function QtyStepper({ value, onChange, min = 1, max = 12, label, size = 'md' }: { value: number; onChange: (n: number) => void; min?: number; max?: number; label: string; size?: 'sm' | 'md' }) {
+  const { ui } = useContent()
   const h = size === 'sm' ? 'h-10' : 'h-12'
   return (
     <div role="group" aria-label={label} className={cx('inline-flex items-center rounded-control border-[1.5px] border-line-strong bg-paper', h)}>
-      <button type="button" aria-label="Decrease quantity" disabled={value <= min} onClick={() => onChange(value - 1)} className={cx('grid aspect-square place-items-center rounded-full text-wine transition-colors hov:bg-cream-2 disabled:opacity-35', h)}>
+      <button type="button" aria-label={ui.decrease} disabled={value <= min} onClick={() => onChange(value - 1)} className={cx('grid aspect-square place-items-center rounded-full text-wine transition-colors hov:bg-cream-2 disabled:opacity-35', h)}>
         <Minus className="size-4" aria-hidden />
       </button>
       <output aria-live="polite" className="w-8 text-center text-[15px] font-semibold tabular-nums text-wine">
         {value}
       </output>
-      <button type="button" aria-label="Increase quantity" disabled={value >= max} onClick={() => onChange(value + 1)} className={cx('grid aspect-square place-items-center rounded-full text-wine transition-colors hov:bg-cream-2 disabled:opacity-35', h)}>
+      <button type="button" aria-label={ui.increase} disabled={value >= max} onClick={() => onChange(value + 1)} className={cx('grid aspect-square place-items-center rounded-full text-wine transition-colors hov:bg-cream-2 disabled:opacity-35', h)}>
         <Plus className="size-4" aria-hidden />
       </button>
     </div>
@@ -281,7 +283,7 @@ export function Container({ children, className }: { children: ReactNode; classN
 export function Crumb({ to, children }: { to: string; children: ReactNode }) {
   return (
     <Link to={to} className="inline-flex min-h-10 items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.14em] text-flame-text hover:text-wine">
-      <span aria-hidden>←</span> {children}
+      <span aria-hidden className="rtl:rotate-180">←</span> {children}
     </Link>
   )
 }

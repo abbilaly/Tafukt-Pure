@@ -75,6 +75,18 @@
 }
 
 @layer base {
+  /* Arabic: Amiri for display, Noto Kufi for text. */
+  html[lang='ar'] {
+    --font-serif: 'Amiri', 'Playfair Display', ui-serif, Georgia, serif;
+    --font-sans: 'Noto Kufi Arabic', 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  }
+
+  /* Arabic is a joined script: tracking breaks the joins and small caps have
+     no meaning, so reset letter-spacing for every text-bearing element. */
+  html[lang='ar'] :where(body, h1, h2, h3, h4, p, span, a, button, label, li, dt, dd, em, strong, small, input, select, textarea, output, legend) {
+    letter-spacing: normal;
+  }
+
   html {
     background: var(--color-maroon-deep);
     color: var(--color-ink);

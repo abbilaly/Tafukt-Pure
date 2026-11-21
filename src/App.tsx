@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router'
 
 import { BagDrawer, Footer, Header, MenuOverlay, Toaster } from './components/Chrome'
+import { LangProvider, useContent } from './lib/lang'
 import { StoreProvider } from './lib/store'
 import { Bag, OrderConfirmed } from './pages/Bag'
 import { Farm } from './pages/Farm'
@@ -29,11 +30,12 @@ function ScrollToTop() {
 
 function Shell() {
   const { pathname } = useLocation()
+  const { ui } = useContent()
   return (
     <>
       <ScrollToTop />
-      <a href="#main" className="sr-only z-[70] rounded-control bg-wine px-5 py-3 text-on-dark focus:not-sr-only focus:fixed focus:left-4 focus:top-4">
-        Skip to content
+      <a href="#main" className="sr-only z-[70] rounded-control bg-wine px-5 py-3 text-on-dark focus:not-sr-only focus:fixed focus:start-4 focus:top-4">
+        {ui.skip}
       </a>
       <Header overlay={pathname === '/'} />
       <main id="main" tabIndex={-1} className="outline-none">
@@ -62,9 +64,11 @@ export function App() {
   return (
     <BrowserRouter>
       <MotionConfig reducedMotion="user">
-        <StoreProvider>
-          <Shell />
-        </StoreProvider>
+        <LangProvider>
+          <StoreProvider>
+            <Shell />
+          </StoreProvider>
+        </LangProvider>
       </MotionConfig>
     </BrowserRouter>
   )

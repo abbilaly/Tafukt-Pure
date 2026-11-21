@@ -52,6 +52,8 @@ export type Product = {
   tint: string
   /** Text colour that passes AA on the tint. */
   tintInk: string
+  /** The English kind, kept for the printed label when the page is in Arabic. */
+  kindLatin?: string
   ring: string
   sizes: Size[]
   short: string

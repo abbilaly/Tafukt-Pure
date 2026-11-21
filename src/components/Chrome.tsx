@@ -3,18 +3,21 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useState, type FormEvent } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
 
-import { bag as bagCopy, brand, currencies, footer, img, nav } from '../content'
+import { currencies, img } from '../content'
+import { LANGS, currencyLabelsAr } from '../content.i18n'
 import { post } from '../lib/api'
 import { cx } from '../lib/cx'
 import { useFocusTrap } from '../lib/focus'
+import { useContent } from '../lib/lang'
 import { useStore } from '../lib/store'
 import { Logo } from './Brand'
 import { Button, IconButton, QtyStepper } from './ui'
 
 export function CurrencySwitch({ dark }: { dark?: boolean }) {
   const { currency, setCurrency } = useStore()
+  const { ui, lang } = useContent()
   return (
-    <div role="group" aria-label="Currency" className="flex items-center gap-1">
+    <div role="group" aria-label={ui.currency} className="flex items-center gap-1">
       {currencies.map((c) => {
         const active = c.id === currency
         return (
@@ -22,7 +25,7 @@ export function CurrencySwitch({ dark }: { dark?: boolean }) {
             key={c.id}
             type="button"
             aria-pressed={active}
-            aria-label={c.label}
+            aria-label={lang === 'ar' ? currencyLabelsAr[c.id] : c.label}
             onClick={() => setCurrency(c.id)}
             className={cx(
               'grid size-10 place-items-center rounded-full text-[12px] font-bold transition-colors duration-200 md:size-8',
@@ -37,10 +40,39 @@ export function CurrencySwitch({ dark }: { dark?: boolean }) {
   )
 }
 
+/** English / Arabic. Flipping this also flips the document to rtl. */
+export function LangSwitch({ dark }: { dark?: boolean }) {
+  const { lang, setLang, ui } = useContent()
+  return (
+    <div role="group" aria-label={ui.language} className="flex items-center gap-1">
+      {LANGS.map((l) => {
+        const active = l.id === lang
+        return (
+          <button
+            key={l.id}
+            type="button"
+            aria-pressed={active}
+            aria-label={l.label}
+            lang={l.id}
+            onClick={() => setLang(l.id)}
+            className={cx(
+              'grid h-10 min-w-10 place-items-center rounded-full px-2 text-[12px] font-bold transition-colors duration-200 md:h-8 md:min-w-8',
+              active ? 'bg-wine text-on-dark' : dark ? 'border-[1.5px] border-on-dark/60 text-on-dark hover:border-on-dark' : 'border-[1.5px] border-wine/70 text-wine hover:border-wine',
+            )}
+          >
+            {l.short}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 function BagButton() {
   const { summary, setBagOpen } = useStore()
+  const { ui } = useContent()
   return (
-    <IconButton label={`Open bag, ${summary.count} ${summary.count === 1 ? 'item' : 'items'}`} onClick={() => setBagOpen(true)}>
+    <IconButton label={ui.openBag(summary.count)} onClick={() => setBagOpen(true)}>
       {summary.count > 0 ? (
         <span className="text-[12px] font-bold tabular-nums">{summary.count}</span>
       ) : (
@@ -52,16 +84,22 @@ function BagButton() {
 
 export function Header({ overlay }: { overlay?: boolean }) {
   const { setMenuOpen, menuOpen } = useStore()
+  const { ui } = useContent()
   return (
     <header className={cx('z-30 w-full', overlay ? 'absolute inset-x-0 top-0' : 'relative bg-cream')}>
       <div className="mx-auto grid grid-cols-[1fr_auto_1fr] items-start px-4 pt-5 md:px-[34px] md:pt-[30px]">
-        <CurrencySwitch />
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="hidden sm:flex">
+            <CurrencySwitch />
+          </span>
+          <LangSwitch />
+        </div>
         <Link to="/" className="rounded-field">
           <Logo />
         </Link>
         <div className="flex items-center justify-end gap-2">
           <Button variant="outline" size="sm" className="!tracking-[0.06em]" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
-            Menu
+            {ui.menu}
           </Button>
           <BagButton />
         </div>
@@ -72,6 +110,7 @@ export function Header({ overlay }: { overlay?: boolean }) {
 
 export function MenuOverlay() {
   const { menuOpen, setMenuOpen } = useStore()
+  const { ui, nav, brand } = useContent()
   const ref = useFocusTrap<HTMLDivElement>(menuOpen, () => setMenuOpen(false))
   return (
     <AnimatePresence>
@@ -80,7 +119,7 @@ export function MenuOverlay() {
           ref={ref}
           role="dialog"
           aria-modal="true"
-          aria-label="Menu"
+          aria-label={ui.menuLabel}
           initial={{ clipPath: 'inset(0 0 100% 0)' }}
           animate={{ clipPath: 'inset(0 0 0% 0)' }}
           exit={{ clipPath: 'inset(0 0 100% 0)' }}
@@ -88,15 +127,18 @@ export function MenuOverlay() {
           className="on-dark fixed inset-0 z-50 overflow-y-auto bg-maroon-deep text-on-dark"
         >
           <div className="mx-auto flex min-h-full max-w-[1440px] flex-col px-4 py-5 md:px-[34px] md:py-[30px]">
-            <div className="flex items-center justify-between">
-              <CurrencySwitch dark />
-              <IconButton label="Close menu" tone="dark" size="md" data-autofocus onClick={() => setMenuOpen(false)}>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <CurrencySwitch dark />
+                <LangSwitch dark />
+              </div>
+              <IconButton label={ui.closeMenu} tone="dark" size="md" data-autofocus onClick={() => setMenuOpen(false)}>
                 <X className="size-5" aria-hidden />
               </IconButton>
             </div>
-            <nav aria-label="Main" className="mt-10 flex-1 md:mt-16">
+            <nav aria-label={ui.mainNav} className="mt-10 flex-1 md:mt-16">
               <ul className="flex flex-col">
-                {[{ to: '/', label: 'Home', note: 'Back to the hill' }, ...nav].map((n, i) => (
+                {[{ to: '/', label: ui.home, note: ui.homeNote }, ...nav].map((n, i) => (
                   <motion.li key={n.to} initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 + i * 0.06 }} className="border-b border-on-dark/15">
                     <NavLink
                       to={n.to}
@@ -126,29 +168,31 @@ export function MenuOverlay() {
 
 export function BagDrawer() {
   const { bagOpen, setBagOpen, summary, setQty, remove, format } = useStore()
+  const { ui, bag: bagCopy, dir, product: productOf } = useContent()
   const ref = useFocusTrap<HTMLDivElement>(bagOpen, () => setBagOpen(false))
   const left = bagCopy.freeOver - (summary.subtotal - summary.discount)
+  const slide = dir === 'rtl' ? '-100%' : '100%'
   return (
     <AnimatePresence>
       {bagOpen && (
         <motion.div className="fixed inset-0 z-50" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <button type="button" aria-label="Close bag" tabIndex={-1} className="absolute inset-0 bg-maroon-deep/55 backdrop-blur-[2px]" onClick={() => setBagOpen(false)} />
+          <button type="button" aria-label={ui.closeBag} tabIndex={-1} className="absolute inset-0 bg-maroon-deep/55 backdrop-blur-[2px]" onClick={() => setBagOpen(false)} />
           <motion.div
             ref={ref}
             role="dialog"
             aria-modal="true"
             aria-labelledby="bag-title"
-            initial={{ x: '100%' }}
+            initial={{ x: slide }}
             animate={{ x: 0 }}
-            exit={{ x: '100%' }}
+            exit={{ x: slide }}
             transition={{ type: 'spring', damping: 32, stiffness: 300 }}
-            className="absolute inset-y-0 right-0 flex w-full max-w-[440px] flex-col bg-cream shadow-drawer"
+            className="absolute inset-y-0 end-0 flex w-full max-w-[440px] flex-col bg-cream shadow-drawer"
           >
             <div className="flex items-center justify-between border-b border-line px-6 py-5">
               <h2 id="bag-title" className="font-serif text-[30px] text-wine">
                 {bagCopy.title}
               </h2>
-              <IconButton label="Close bag" tone="outline" size="md" data-autofocus onClick={() => setBagOpen(false)}>
+              <IconButton label={ui.closeBag} tone="outline" size="md" data-autofocus onClick={() => setBagOpen(false)}>
                 <X className="size-5" aria-hidden />
               </IconButton>
             </div>
@@ -170,30 +214,34 @@ export function BagDrawer() {
                   </div>
                 </div>
                 <ul className="flex-1 divide-y divide-line overflow-y-auto px-6">
-                  {summary.items.map((i) => (
-                    <li key={i.slug + i.size} className="flex gap-4 py-5">
-                      <Link to={`/shop/${i.slug}`} onClick={() => setBagOpen(false)} className="grid size-20 shrink-0 place-items-center rounded-field" style={{ background: i.product.tint }}>
-                        <img src={img(i.product.image)} alt="" className="h-16 w-auto object-contain" />
-                      </Link>
-                      <div className="flex min-w-0 flex-1 flex-col gap-2">
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <p className="font-serif text-[19px] leading-tight text-wine">{i.product.name}</p>
-                            <p className="text-[13px] text-muted">
-                              {i.product.kind}, {i.sizeInfo.label}
-                            </p>
+                  {summary.items.map((i) => {
+                    const p = productOf(i.slug) ?? i.product
+                    const sizeLabel = p.sizes.find((s) => s.id === i.size)?.label ?? i.sizeInfo.label
+                    return (
+                      <li key={i.slug + i.size} className="flex gap-4 py-5">
+                        <Link to={`/shop/${i.slug}`} onClick={() => setBagOpen(false)} className="grid size-20 shrink-0 place-items-center rounded-field" style={{ background: i.product.tint }}>
+                          <img src={img(i.product.image)} alt="" className="h-16 w-auto object-contain" />
+                        </Link>
+                        <div className="flex min-w-0 flex-1 flex-col gap-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <p className="font-serif text-[19px] leading-tight text-wine">{p.name}</p>
+                              <p className="text-[13px] text-muted">
+                                {p.kind}, {sizeLabel}
+                              </p>
+                            </div>
+                            <p className="font-semibold tabular-nums text-wine">{format(i.lineTotal)}</p>
                           </div>
-                          <p className="font-semibold tabular-nums text-wine">{format(i.lineTotal)}</p>
+                          <div className="flex items-center justify-between">
+                            <QtyStepper size="sm" label={ui.quantityOf(p.name)} value={i.qty} onChange={(n) => setQty(i.slug, i.size, n)} />
+                            <IconButton label={ui.removeItem(p.name)} tone="cream" onClick={() => remove(i.slug, i.size)}>
+                              <Trash2 className="size-4" aria-hidden />
+                            </IconButton>
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <QtyStepper size="sm" label={`Quantity of ${i.product.name}`} value={i.qty} onChange={(n) => setQty(i.slug, i.size, n)} />
-                          <IconButton label={`Remove ${i.product.name}`} tone="cream" onClick={() => remove(i.slug, i.size)}>
-                            <Trash2 className="size-4" aria-hidden />
-                          </IconButton>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
+                      </li>
+                    )
+                  })}
                 </ul>
                 <div className="border-t border-line px-6 py-5">
                   <div className="flex items-baseline justify-between">
@@ -201,7 +249,7 @@ export function BagDrawer() {
                     <span className="font-serif text-[26px] tabular-nums text-wine">{format(summary.subtotal)}</span>
                   </div>
                   <Button to="/bag" size="lg" className="mt-4 w-full" onClick={() => setBagOpen(false)}>
-                    Review and check out
+                    {ui.reviewCheckout}
                   </Button>
                 </div>
               </>
@@ -215,6 +263,7 @@ export function BagDrawer() {
 
 export function Toaster() {
   const { toasts, dismiss } = useStore()
+  const { ui } = useContent()
   return (
     <div aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-4 z-[60] flex flex-col items-center gap-2 px-4">
       <AnimatePresence>
@@ -225,10 +274,10 @@ export function Toaster() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
-            className={cx('pointer-events-auto flex items-center gap-3 rounded-control py-2 pl-5 pr-2 text-[14px] font-semibold shadow-card', t.tone === 'error' ? 'bg-danger text-white' : 'bg-wine text-on-dark')}
+            className={cx('pointer-events-auto flex items-center gap-3 rounded-control py-2 ps-5 pe-2 text-[14px] font-semibold shadow-card', t.tone === 'error' ? 'bg-danger text-white' : 'bg-wine text-on-dark')}
           >
             <span>{t.message}</span>
-            <button type="button" aria-label="Dismiss" onClick={() => dismiss(t.id)} className="grid size-10 place-items-center rounded-full hover:bg-white/10">
+            <button type="button" aria-label={ui.dismiss} onClick={() => dismiss(t.id)} className="grid size-10 place-items-center rounded-full hover:bg-white/10">
               <X className="size-4" aria-hidden />
             </button>
           </motion.div>
@@ -239,12 +288,13 @@ export function Toaster() {
 }
 
 export function Newsletter() {
+  const { lang, footer } = useContent()
   const [email, setEmail] = useState('')
   const [state, setState] = useState<{ s: 'idle' | 'loading' | 'done' } | { s: 'error'; msg: string }>({ s: 'idle' })
   const submit = async (e: FormEvent) => {
     e.preventDefault()
     setState({ s: 'loading' })
-    const r = await post('/api/subscribe', { email })
+    const r = await post('/api/subscribe', { email }, lang)
     setState(r.ok ? { s: 'done' } : { s: 'error', msg: r.error })
   }
   if (state.s === 'done')
@@ -258,7 +308,7 @@ export function Newsletter() {
       <label htmlFor="nl-email" className="sr-only">
         {footer.newsletterPlaceholder}
       </label>
-      <div className={cx('flex h-14 items-center rounded-control border-[1.5px] bg-maroon-deep/40 p-1.5 pl-5', state.s === 'error' ? 'border-flame' : 'border-on-dark/40 focus-within:border-on-dark', 'has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-3 has-[input:focus-visible]:outline-on-dark')}>
+      <div className={cx('flex h-14 items-center rounded-control border-[1.5px] bg-maroon-deep/40 p-1.5 ps-5', state.s === 'error' ? 'border-flame' : 'border-on-dark/40 focus-within:border-on-dark', 'has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-3 has-[input:focus-visible]:outline-on-dark')}>
         <input
           id="nl-email"
           type="email"
@@ -275,7 +325,7 @@ export function Newsletter() {
         </Button>
       </div>
       {state.s === 'error' && (
-        <p id="nl-err" role="alert" className="mt-2 pl-5 text-[13px] font-semibold text-[#ffb79c]">
+        <p id="nl-err" role="alert" className="mt-2 ps-5 text-[13px] font-semibold text-[#ffb79c]">
           {state.msg}
         </p>
       )}
@@ -285,6 +335,7 @@ export function Newsletter() {
 
 export function Footer() {
   const { pathname } = useLocation()
+  const { footer, brand } = useContent()
   return (
     <footer className="on-dark bg-maroon-deep text-on-dark">
       <div className="mx-auto max-w-[1440px] px-4 pb-10 pt-20 md:px-[34px]">
@@ -317,11 +368,11 @@ export function Footer() {
           <Link to="/" className="rounded-field">
             <Logo dark compact />
           </Link>
-          <p className="text-center text-[13px] text-on-dark-muted md:text-right">
+          <p className="text-center text-[13px] text-on-dark-muted md:text-end">
             {footer.legal}
             <br />
             <a href={`mailto:${brand.email}`} className="inline-flex min-h-10 items-center gap-1 hover:text-on-dark">
-              {brand.email} <ArrowUpRight className="size-3.5" aria-hidden />
+              {brand.email} <ArrowUpRight className="size-3.5 rtl:-scale-x-100" aria-hidden />
             </a>
           </p>
         </div>

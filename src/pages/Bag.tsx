@@ -5,8 +5,9 @@ import { Link, useNavigate, useParams } from 'react-router'
 
 import { JarTile } from '../components/Cards'
 import { Button, Container, Crumb, EmptyState, IconButton, Input, Notice, OptionCard, QtyStepper, Select, Textarea } from '../components/ui'
-import { bag as copy, order as orderCopy } from '../content'
+import { countryNamesAr, promoLabelsAr } from '../content.i18n'
 import { post } from '../lib/api'
+import { useContent } from '../lib/lang'
 import { PROMOS } from '../lib/pricing'
 import { useStore } from '../lib/store'
 import { useTitle } from '../lib/title'
@@ -15,8 +16,9 @@ type Contact = { name: string; email: string; address: string; city: string; pos
 const blank: Contact = { name: '', email: '', address: '', city: '', postcode: '', country: 'Italy', note: '' }
 
 export function Bag() {
-  useTitle('Your bag')
   const store = useStore()
+  const { bag: copy, ui, lang, product: productOf } = useContent()
+  useTitle(copy.title)
   const { summary, setQty, remove, format, shipping, setShipping, promo, setPromo, lines } = store
   const navigate = useNavigate()
   const [contact, setContact] = useState<Contact>(blank)
@@ -38,7 +40,7 @@ export function Bag() {
 
   const applyPromo = async () => {
     setPromoState({ s: 'loading' })
-    const r = await post<{ code: string }>('/api/promo', { code })
+    const r = await post<{ code: string }>('/api/promo', { code }, lang)
     if (r.ok) {
       setPromo(r.data.code)
       setCode('')
@@ -50,7 +52,7 @@ export function Bag() {
     e.preventDefault()
     setSending(true)
     setFormError('')
-    const r = await post<{ reference: string; total: number }>('/api/order', { items: lines, shipping, promo, contact })
+    const r = await post<{ reference: string; total: number }>('/api/order', { items: lines, shipping, promo, contact }, lang)
     setSending(false)
     if (!r.ok) {
       flushSync(() => {
@@ -66,11 +68,14 @@ export function Bag() {
       createdAt: new Date().toISOString(),
       name: contact.name,
       email: contact.email,
-      address: shipping === 'pickup' ? 'Collect at the farm' : `${contact.address}, ${contact.postcode} ${contact.city}, ${contact.country}`,
-      shipping: summary.option.label,
+      address: shipping === 'pickup' ? copy.shippingOptions.find((o) => o.id === 'pickup')?.label ?? '' : `${contact.address}, ${contact.postcode} ${contact.city}, ${countryLabel(contact.country, lang)}`,
+      shipping: copy.shippingOptions.find((o) => o.id === shipping)?.label ?? '',
       total: summary.total,
       currency: store.currency,
-      items: summary.items.map((i) => ({ name: i.product.name, size: i.sizeInfo.label, qty: i.qty })),
+      items: summary.items.map((i) => {
+        const p = productOf(i.slug) ?? i.product
+        return { name: p.name, size: p.sizes.find((s) => s.id === i.size)?.label ?? i.sizeInfo.label, qty: i.qty }
+      }),
     })
     store.clear()
     setPromo(null)
@@ -91,40 +96,45 @@ export function Bag() {
 
   const pickup = shipping === 'pickup'
   const left = copy.freeOver - (summary.subtotal - summary.discount)
+  const promoLabel = promo ? (lang === 'ar' ? promoLabelsAr[promo] ?? PROMOS[promo]?.label : PROMOS[promo]?.label) : undefined
 
   return (
     <Container className="pb-28 pt-8">
-      <Crumb to="/shop">Keep shopping</Crumb>
+      <Crumb to="/shop">{ui.keepShopping}</Crumb>
       <h1 className="mt-4 font-serif text-[52px] leading-none text-wine md:text-[68px]">{copy.title}</h1>
       <form onSubmit={placeOrder} noValidate className="mt-10 grid gap-12 lg:grid-cols-[1.3fr_1fr] lg:gap-16">
         <div className="flex flex-col gap-12">
           <section aria-labelledby="lines-h">
             <h2 id="lines-h" className="sr-only">
-              Items
+              {ui.itemsHeading}
             </h2>
             <ul className="divide-y divide-line border-y border-line">
-              {summary.items.map((i) => (
-                <li key={i.slug + i.size} className="flex gap-4 py-5 sm:gap-6">
-                  <Link to={`/shop/${i.slug}`} className="shrink-0 rounded-field">
-                    <JarTile product={i.product} className="size-24 rounded-field sm:size-28" />
-                  </Link>
-                  <div className="flex flex-1 flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                    <div>
-                      <p className="font-serif text-[24px] leading-tight text-wine">{i.product.name}</p>
-                      <p className="text-[14px] text-muted">
-                        {i.product.kind} · {i.sizeInfo.label} · {format(i.sizeInfo.price)}
-                      </p>
+              {summary.items.map((i) => {
+                const p = productOf(i.slug) ?? i.product
+                const sizeLabel = p.sizes.find((s) => s.id === i.size)?.label ?? i.sizeInfo.label
+                return (
+                  <li key={i.slug + i.size} className="flex gap-4 py-5 sm:gap-6">
+                    <Link to={`/shop/${i.slug}`} className="shrink-0 rounded-field">
+                      <JarTile product={i.product} className="size-24 rounded-field sm:size-28" />
+                    </Link>
+                    <div className="flex flex-1 flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                      <div>
+                        <p className="font-serif text-[24px] leading-tight text-wine">{p.name}</p>
+                        <p className="text-[14px] text-muted">
+                          {p.kind} · {sizeLabel} · {format(i.sizeInfo.price)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <QtyStepper size="sm" label={ui.quantityOf(p.name)} value={i.qty} onChange={(n) => setQty(i.slug, i.size, n)} />
+                        <p className="w-20 text-end font-semibold tabular-nums text-wine">{format(i.lineTotal)}</p>
+                        <IconButton label={ui.removeItem(p.name)} tone="cream" onClick={() => remove(i.slug, i.size)}>
+                          <Trash2 className="size-4" aria-hidden />
+                        </IconButton>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <QtyStepper size="sm" label={`Quantity of ${i.product.name}`} value={i.qty} onChange={(n) => setQty(i.slug, i.size, n)} />
-                      <p className="w-20 text-right font-semibold tabular-nums text-wine">{format(i.lineTotal)}</p>
-                      <IconButton label={`Remove ${i.product.name}`} tone="cream" onClick={() => remove(i.slug, i.size)}>
-                        <Trash2 className="size-4" aria-hidden />
-                      </IconButton>
-                    </div>
-                  </div>
-                </li>
-              ))}
+                  </li>
+                )
+              })}
             </ul>
           </section>
 
@@ -160,7 +170,9 @@ export function Bag() {
                   <Input label={copy.fields.postcode} autoComplete="postal-code" {...field('postcode')} />
                   <Select label={copy.fields.country} autoComplete="country-name" {...field('country')}>
                     {copy.countries.map((c) => (
-                      <option key={c}>{c}</option>
+                      <option key={c} value={c}>
+                        {countryLabel(c, lang)}
+                      </option>
                     ))}
                   </Select>
                 </div>
@@ -169,7 +181,9 @@ export function Bag() {
             {pickup && (
               <Select label={copy.fields.country} {...field('country')}>
                 {copy.countries.map((c) => (
-                  <option key={c}>{c}</option>
+                  <option key={c} value={c}>
+                    {countryLabel(c, lang)}
+                  </option>
                 ))}
               </Select>
             )}
@@ -182,7 +196,7 @@ export function Bag() {
             <h2 id="sum-h" className="font-serif text-[30px]">
               {copy.summary}
             </h2>
-            <p className="mt-4 text-[14px] text-on-dark-muted">{pickup ? 'Collect from the farm kitchen, Saturdays 9–12.' : left > 0 ? copy.freeNote(format(left)) : copy.freeDone}</p>
+            <p className="mt-4 text-[14px] text-on-dark-muted">{pickup ? ui.collectNote : left > 0 ? copy.freeNote(format(left)) : copy.freeDone}</p>
             <dl className="mt-6 flex flex-col gap-3 border-t border-on-dark/20 pt-6 text-[15px]">
               <div className="flex justify-between">
                 <dt className="text-on-dark-muted">
@@ -210,11 +224,11 @@ export function Bag() {
 
             <div className="mt-6">
               {promo ? (
-                <div className="flex items-center justify-between rounded-control bg-maroon-deep/40 py-1 pl-4 pr-1">
+                <div className="flex items-center justify-between rounded-control bg-maroon-deep/40 py-1 ps-4 pe-1">
                   <span className="flex items-center gap-2 text-[14px] font-semibold">
-                    <Tag className="size-4 text-flame" aria-hidden /> {promo}: {PROMOS[promo]?.label}
+                    <Tag className="size-4 text-flame" aria-hidden /> {promo}: {promoLabel}
                   </span>
-                  <IconButton label="Remove promo code" tone="dark" onClick={() => setPromo(null)}>
+                  <IconButton label={ui.removePromo} tone="dark" onClick={() => setPromo(null)}>
                     <X className="size-4" aria-hidden />
                   </IconButton>
                 </div>
@@ -237,9 +251,14 @@ export function Bag() {
   )
 }
 
+function countryLabel(name: string, lang: string) {
+  return lang === 'ar' ? countryNamesAr[name] ?? name : name
+}
+
 // The promo field lives inside the checkout form, so it submits on its own
 // button rather than nesting a form.
 function PromoForm({ code, setCode, state, onApply }: { code: string; setCode: (v: string) => void; state: { s: string; msg?: string }; onApply: () => void }) {
+  const { bag: copy } = useContent()
   return (
     <div>
       <label htmlFor="promo" className="text-[13px] font-semibold">
@@ -276,6 +295,7 @@ function PromoForm({ code, setCode, state, onApply }: { code: string; setCode: (
 
 function OrderHistory() {
   const { orders, format } = useStore()
+  const { order: orderCopy, ui, lang } = useContent()
   if (!orders.length) return null
   return (
     <section className="mt-16">
@@ -286,7 +306,7 @@ function OrderHistory() {
             <Link to={`/order/${o.reference}`} className="flex min-h-14 flex-wrap items-center justify-between gap-2 py-3 hover:text-flame-text">
               <span className="font-semibold text-wine">{o.reference}</span>
               <span className="text-[14px] text-muted">
-                {new Date(o.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} · {o.items.reduce((n, i) => n + i.qty, 0)} items · {format(o.total)}
+                {new Date(o.createdAt).toLocaleDateString(lang === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric' })} · {ui.productsCount(o.items.reduce((n, i) => n + i.qty, 0))} · {format(o.total)}
               </span>
             </Link>
           </li>
@@ -299,20 +319,21 @@ function OrderHistory() {
 export function OrderConfirmed() {
   const { reference } = useParams()
   const { orders } = useStore()
+  const { order: orderCopy, ui } = useContent()
   const o = orders.find((x) => x.reference === reference)
-  useTitle(o ? `Order ${o.reference}` : 'Order not found')
+  useTitle(o ? `${ui.orderWord} ${o.reference}` : ui.orderNotFound)
   return (
     <Container className="flex min-h-[70vh] flex-col items-center justify-center py-24 text-center">
       {o ? (
         <>
           <p className="font-serif text-[96px] italic leading-none text-flame-text md:text-[140px]">{orderCopy.title}</p>
           <p className="mt-6 max-w-lg text-[17px] text-muted">{orderCopy.body}</p>
-          <div className="mt-10 w-full max-w-md rounded-card bg-paper p-6 text-left shadow-card">
+          <div className="mt-10 w-full max-w-md rounded-card bg-paper p-6 text-start shadow-card">
             <p className="text-[12px] font-bold uppercase tracking-[0.2em] text-flame-text">{orderCopy.reference}</p>
             <p className="mt-1 font-serif text-[30px] text-wine">{o.reference}</p>
             <ul className="mt-4 divide-y divide-line border-y border-line text-[15px]">
               {o.items.map((i) => (
-                <li key={i.name + i.size} className="flex justify-between py-2">
+                <li key={i.name + i.size} className="flex justify-between gap-3 py-2">
                   <span>
                     {i.qty} × {i.name}
                   </span>
@@ -323,13 +344,13 @@ export function OrderConfirmed() {
             <p className="mt-4 text-[14px] text-muted">
               {o.shipping} · {o.address}
             </p>
-            <p className="mt-1 text-[14px] text-muted">Confirmation to {o.email}</p>
+            <p className="mt-1 text-[14px] text-muted">{ui.confirmationTo(o.email)}</p>
           </div>
         </>
       ) : (
         <h1 className="font-serif text-[40px] text-wine">{orderCopy.missing}</h1>
       )}
-      {o && <h1 className="sr-only">Order {o.reference} confirmed</h1>}
+      {o && <h1 className="sr-only">{ui.confirmed(o.reference)}</h1>}
       <div className="mt-10">
         <Button to="/shop">{orderCopy.again}</Button>
       </div>

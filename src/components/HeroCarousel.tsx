@@ -2,7 +2,8 @@ import { motion, useReducedMotion } from 'motion/react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 
-import { heroOrder, home, products, type Product } from '../content'
+import { heroOrder, type Product } from '../content'
+import { useContent } from '../lib/lang'
 import { CurvedText, Hill } from './Brand'
 import { Jar } from './Cards'
 
@@ -31,8 +32,6 @@ const NARROW: Record<number, Slot> = {
   3: { cx: 700, cy: 600, h: 180, rot: 14, o: 0, z: 1 },
 }
 
-const jars = heroOrder.map((s) => products.find((p) => p.slug === s)).filter((p): p is Product => !!p)
-
 function useSize<T extends HTMLElement>() {
   const ref = useRef<T>(null)
   const [size, setSize] = useState({ w: 1440, h: 900 })
@@ -47,6 +46,8 @@ function useSize<T extends HTMLElement>() {
 }
 
 export function HeroCarousel({ onScroll }: { onScroll: () => void }) {
+  const { products, home, ui } = useContent()
+  const jars = heroOrder.map((s) => products.find((p) => p.slug === s)).filter((p): p is Product => !!p)
   const [ref, { w, h }] = useSize<HTMLElement>()
   const [active, setActive] = useState(0)
   const [turn, setTurn] = useState(0)
@@ -90,7 +91,7 @@ export function HeroCarousel({ onScroll }: { onScroll: () => void }) {
     <section
       ref={ref}
       aria-roledescription="carousel"
-      aria-label="Featured jars"
+      aria-label={ui.featuredJars}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -118,7 +119,7 @@ export function HeroCarousel({ onScroll }: { onScroll: () => void }) {
       </div>
 
       <p className="sr-only" aria-live="polite">
-        Showing {featured.name}, {featured.kind}. {active + 1} of {n}.
+        {ui.showing(featured.name, featured.kind, active + 1, n)}
       </p>
 
       {jars.map((p, i) => {
@@ -146,11 +147,11 @@ export function HeroCarousel({ onScroll }: { onScroll: () => void }) {
             {isFeatured ? (
               <Link to={`/shop/${p.slug}`} className="block size-full rounded-[24px]">
                 {jar}
-                <span className="sr-only">{p.label ? '' : `${p.name} ${p.kind}`} View product</span>
+                <span className="sr-only">{p.label ? '' : `${p.name} ${p.kind}`} {ui.viewProduct}</span>
               </Link>
             ) : (
               <button type="button" tabIndex={hidden ? -1 : 0} aria-hidden={hidden || undefined} onClick={() => go(rel)} className="block size-full rounded-[24px] transition-[filter] hover:brightness-105">
-                <span className="sr-only">Show {p.label ? '' : `${p.name} ${p.kind}`}</span>
+                <span className="sr-only">{ui.showProduct(p.label ? p.name : `${p.name} ${p.kind}`)}</span>
                 {jar}
               </button>
             )}

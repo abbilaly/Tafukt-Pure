@@ -1,6 +1,8 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react'
 
 import { currencies, type Currency, type Product } from '../content'
+import type { Lang } from '../content.i18n'
+import { useLang } from './lang'
 import { usePersistent } from './persist'
 import { MAX_QTY, totals, type Line } from './pricing'
 
@@ -57,12 +59,14 @@ const isCurrency = (v: unknown): v is Currency => v === 'EUR' || v === 'USD'
 const isString = (v: unknown): v is string => typeof v === 'string'
 const isPromo = (v: unknown): v is string | null => v === null || typeof v === 'string'
 
-export function formatPrice(eur: number, currency: Currency) {
+export function formatPrice(eur: number, currency: Currency, lang: Lang = 'en') {
   const c = currencies.find((x) => x.id === currency) ?? currencies[0]
-  return new Intl.NumberFormat(currency === 'EUR' ? 'en-IE' : 'en-US', { style: 'currency', currency }).format(eur * c.rate)
+  const locale = lang === 'ar' ? 'ar-EG-u-nu-latn' : currency === 'EUR' ? 'en-IE' : 'en-US'
+  return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(eur * c.rate)
 }
 
 export function StoreProvider({ children }: { children: ReactNode }) {
+  const { lang } = useLang()
   const [lines, setLines] = usePersistent<Line[]>('cedrina-bag', [], isLines)
   const [currency, setCurrency] = usePersistent<Currency>('cedrina-currency', 'EUR', isCurrency)
   const [shipping, setShipping] = usePersistent<string>('cedrina-shipping', 'standard', isString)
@@ -100,7 +104,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const remove = useCallback((slug: string, size: string) => setLines((ls) => ls.filter((l) => !(l.slug === slug && l.size === size))), [setLines])
   const clear = useCallback(() => setLines([]), [setLines])
   const addOrder = useCallback((o: Order) => setOrders((os) => [o, ...os].slice(0, 20)), [setOrders])
-  const format = useCallback((eur: number) => formatPrice(eur, currency), [currency])
+  const format = useCallback((eur: number) => formatPrice(eur, currency, lang), [currency, lang])
   const summary = useMemo(() => totals(lines, shipping, promo), [lines, shipping, promo])
 
   const value = useMemo<Store>(

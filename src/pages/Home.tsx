@@ -6,7 +6,8 @@ import { Link } from 'react-router'
 import { JarTile, ProductCard, RecipeCard } from '../components/Cards'
 import { HeroCarousel } from '../components/HeroCarousel'
 import { Button, Container, Eyebrow, SectionHeading, Sprig } from '../components/ui'
-import { categories, home, img, products, recipes } from '../content'
+import { img } from '../content'
+import { useContent } from '../lib/lang'
 import { useStock } from '../lib/stock'
 import { useTitle } from '../lib/title'
 
@@ -14,6 +15,7 @@ const rise = { initial: { opacity: 0, y: 28 }, whileInView: { opacity: 1, y: 0 }
 
 export function Home() {
   useTitle()
+  const { home, categories, products, recipes } = useContent()
   const stock = useStock()
   const next = useRef<HTMLDivElement>(null)
   const best = ['smeraldo', 'gelsi-neri', 'pesto-rosso', 'arance-a-fette'].map((s) => products.find((p) => p.slug === s)!)
@@ -41,7 +43,7 @@ export function Home() {
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <SectionHeading eyebrow={home.bestsellers.eyebrow} title={home.bestsellers.title} />
             <Button to="/shop" variant="outline">
-              {home.bestsellers.cta} <ArrowRight className="size-4" aria-hidden />
+              {home.bestsellers.cta} <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
             </Button>
           </div>
           <div className="mt-14 grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
@@ -64,13 +66,13 @@ export function Home() {
                 <motion.div key={c.id} {...rise}>
                   <Link to={`/shop?c=${c.id}`} className="group block rounded-card">
                     <JarTile product={p} className="aspect-[4/5] rounded-[999px_999px_22px_22px] [&_.jar]:group-hover:-translate-y-3 [&_.jar]:group-hover:rotate-[4deg]" />
-                    <div className="mt-5 flex items-center justify-between">
+                    <div className="mt-5 flex items-center justify-between gap-4">
                       <div>
                         <h3 className="font-serif text-[30px] text-wine">{c.title}</h3>
                         <p className="text-muted">{c.blurb}</p>
                       </div>
-                      <span aria-hidden className="grid size-12 place-items-center rounded-full border-[1.5px] border-wine text-wine transition-colors group-hover:bg-wine group-hover:text-on-dark">
-                        <ArrowRight className="size-5" />
+                      <span aria-hidden className="grid size-12 shrink-0 place-items-center rounded-full border-[1.5px] border-wine text-wine transition-colors group-hover:bg-wine group-hover:text-on-dark">
+                        <ArrowRight className="size-5 rtl:-scale-x-100" />
                       </span>
                     </div>
                   </Link>
@@ -90,7 +92,7 @@ export function Home() {
             </SectionHeading>
             <div className="mt-10">
               <Button to="/farm" variant="ghost">
-                {home.story.cta} <ArrowRight className="size-4" aria-hidden />
+                {home.story.cta} <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
               </Button>
             </div>
           </div>
@@ -102,7 +104,7 @@ export function Home() {
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <SectionHeading eyebrow={home.recipes.eyebrow} title={home.recipes.title} />
             <Button to="/recipes" variant="outline">
-              {home.recipes.cta} <ArrowRight className="size-4" aria-hidden />
+              {home.recipes.cta} <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
             </Button>
           </div>
           <div className="mt-14 grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">

@@ -4,12 +4,14 @@ import { useSearchParams } from 'react-router'
 
 import { ProductCard } from '../components/Cards'
 import { Button, Chip, Container, EmptyState, Notice, SectionHeading, Select, Skeleton } from '../components/ui'
-import { categories, products, shop, type Category } from '../content'
+import type { Category } from '../content'
+import { useContent } from '../lib/lang'
 import { useStock } from '../lib/stock'
 import { useTitle } from '../lib/title'
 
 export function Shop() {
-  useTitle('The larder')
+  const { shop, categories, products, ui } = useContent()
+  useTitle(shop.eyebrow)
   const [params, setParams] = useSearchParams()
   const stock = useStock()
   const cat = (categories.some((c) => c.id === params.get('c')) ? params.get('c') : null) as Category | null
@@ -30,7 +32,7 @@ export function Shop() {
     if (sort === 'price-desc') out.sort((a, b) => b.sizes[0].price - a.sizes[0].price)
     if (sort === 'name') out.sort((a, b) => a.name.localeCompare(b.name))
     return out
-  }, [cat, q, sort])
+  }, [cat, q, sort, products])
 
   return (
     <Container className="pb-28 pt-12 md:pt-16">
@@ -39,7 +41,7 @@ export function Shop() {
       </SectionHeading>
 
       <div className="mt-12 flex flex-col gap-4 border-y border-line py-5 lg:flex-row lg:items-end lg:justify-between">
-        <div role="group" aria-label="Shelf" className="flex flex-wrap gap-2">
+        <div role="group" aria-label={ui.shelf} className="flex flex-wrap gap-2">
           <Chip active={!cat} onClick={() => set('c', null)}>
             {shop.all}
           </Chip>
@@ -54,17 +56,17 @@ export function Shop() {
             <label htmlFor="shop-q" className="sr-only">
               {shop.searchLabel}
             </label>
-            <Search aria-hidden className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted" />
+            <Search aria-hidden className="pointer-events-none absolute start-4 top-1/2 size-4 -translate-y-1/2 text-muted" />
             <input
               id="shop-q"
               type="search"
               value={q}
               onChange={(e) => set('q', e.target.value || null)}
               placeholder={shop.searchPlaceholder}
-              className="h-12 w-full rounded-control border-[1.5px] border-line-strong bg-paper pl-11 pr-11 text-[15px] text-ink placeholder:text-muted/80 hover:border-wine focus-visible:border-wine [&::-webkit-search-cancel-button]:hidden"
+              className="h-12 w-full rounded-control border-[1.5px] border-line-strong bg-paper ps-11 pe-11 text-[15px] text-ink placeholder:text-muted/80 hover:border-wine focus-visible:border-wine [&::-webkit-search-cancel-button]:hidden"
             />
             {q && (
-              <button type="button" aria-label="Clear search" onClick={() => set('q', null)} className="absolute right-1 top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-full text-wine hover:bg-cream-2">
+              <button type="button" aria-label={ui.clearSearch} onClick={() => set('q', null)} className="absolute end-1 top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-full text-wine hover:bg-cream-2">
                 <X className="size-4" aria-hidden />
               </button>
             )}
@@ -80,8 +82,8 @@ export function Shop() {
       </div>
 
       <p className="mt-6 text-[14px] text-muted" aria-live="polite">
-        {list.length} {list.length === 1 ? 'product' : 'products'}
-        {stock.status === 'loading' && <span className="ml-2">· checking stock…</span>}
+        {ui.productsCount(list.length)}
+        {stock.status === 'loading' && <span className="ms-2">· {ui.checkingStock}</span>}
       </p>
       {stock.status === 'error' && (
         <div className="mt-4">

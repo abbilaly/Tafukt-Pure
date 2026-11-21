@@ -1,7 +1,7 @@
 import { useId } from 'react'
 
-import { brand } from '../content'
 import { cx } from '../lib/cx'
+import { useContent } from '../lib/lang'
 
 /** The Cedrina emblem: a basket of citrus under two leaves. */
 export function Emblem({ className }: { className?: string }) {
@@ -22,6 +22,7 @@ export function Emblem({ className }: { className?: string }) {
 }
 
 export function Wordmark({ className, dark }: { className?: string; dark?: boolean }) {
+  const { brand } = useContent()
   return (
     <span className={cx('flex flex-col items-center leading-none', className)}>
       <span className={cx('font-serif text-[25px] font-semibold uppercase tracking-[0.06em]', dark ? 'text-on-dark' : 'text-wine')}>{brand.word}</span>{' '}
@@ -31,11 +32,12 @@ export function Wordmark({ className, dark }: { className?: string; dark?: boole
 }
 
 export function Logo({ className, dark, compact }: { className?: string; dark?: boolean; compact?: boolean }) {
+  const { ui } = useContent()
   return (
     <span className={cx('flex flex-col items-center gap-1', className)}>
       <Emblem className={cx(compact ? 'h-9' : 'h-12 md:h-[60px]', 'w-auto')} />
       <Wordmark dark={dark} />
-      <span className="sr-only">, home</span>
+      <span className="sr-only">, {ui.home}</span>
     </span>
   )
 }
