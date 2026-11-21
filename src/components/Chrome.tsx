@@ -304,11 +304,11 @@ export function Newsletter() {
       </p>
     )
   return (
-    <form onSubmit={submit} noValidate className="w-full max-w-md">
+    <form onSubmit={submit} noValidate className="w-full min-w-0 max-w-md">
       <label htmlFor="nl-email" className="sr-only">
         {footer.newsletterPlaceholder}
       </label>
-      <div className={cx('flex h-14 items-center rounded-control border-[1.5px] bg-maroon-deep/40 p-1.5 ps-5', state.s === 'error' ? 'border-flame' : 'border-on-dark/40 focus-within:border-on-dark', 'has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-3 has-[input:focus-visible]:outline-on-dark')}>
+      <div className={cx('flex h-14 min-w-0 items-center rounded-control border-[1.5px] bg-maroon-deep/40 p-1.5 ps-5', state.s === 'error' ? 'border-flame' : 'border-on-dark/40 focus-within:border-on-dark', 'has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-3 has-[input:focus-visible]:outline-on-dark')}>
         <input
           id="nl-email"
           type="email"
@@ -318,7 +318,7 @@ export function Newsletter() {
           placeholder={footer.newsletterPlaceholder}
           aria-invalid={state.s === 'error' || undefined}
           aria-describedby={state.s === 'error' ? 'nl-err' : undefined}
-          className="h-full min-w-0 flex-1 bg-transparent text-[15px] text-on-dark focus-visible:outline-none placeholder:text-on-dark-muted"
+          className="h-full w-0 min-w-0 flex-1 bg-transparent text-[15px] text-on-dark focus-visible:outline-none placeholder:text-on-dark-muted"
         />
         <Button type="submit" variant="cream" loading={state.s === 'loading'}>
           {footer.newsletterCta}
@@ -339,7 +339,10 @@ export function Footer() {
   return (
     <footer className="on-dark bg-maroon-deep text-on-dark">
       <div className="mx-auto max-w-[1440px] px-4 pb-10 pt-20 md:px-[34px]">
-        <div className="grid gap-12 md:grid-cols-[1.2fr_1fr]">
+        {/* min-w-0 on the columns: Arabic input text is wider than Latin, and an
+            intrinsic-width input would otherwise push the grid track past the
+            viewport (the RTL page grew to 448px at 375px). */}
+        <div className="grid gap-12 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] [&>div]:min-w-0">
           <div>
             <h2 className="font-serif text-[40px] leading-tight md:text-[56px]">{footer.newsletterTitle}</h2>
             <p className="mt-3 max-w-md text-on-dark-muted">{footer.newsletterBody}</p>

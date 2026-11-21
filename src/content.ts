@@ -1,5 +1,15 @@
 // Every string, price and piece of seed data for the TAFUKT PURE storefront.
 // Edit here first; the pages only lay this out.
+//
+// BRAND COPY — NOT FINAL. The positioning, the meaning of TAFUKT PURE, the
+// brand story, the cultural references, the category introductions and the
+// homepage headlines are all still to be written. Until then the site uses the
+// single `comingSoon` block below so no heritage, date, certification or
+// production claim is invented. Replace, in this order:
+//   1. `comingSoon` and `home.statement` / `home.story` — identity and story.
+//   2. `categories[].blurb`, `farm.note`, `farm.seasons` — Moroccan context.
+//   3. `products[].short` / `description` and `recipesPage.intro` — catalogue.
+// Every field has an Arabic counterpart in content.i18n.ts; keep both in step.
 
 /** All imagery routes through this one helper. Swap the files in
  *  public/images (same names) for real photography, or point IMAGE_BASE at a CDN. */
@@ -10,11 +20,19 @@ export const brand = {
   name: 'TAFUKT PURE',
   word: 'Tafukt',
   sub: 'Pure',
-  tagline: 'Moroccan natural products, made in small batches',
+  tagline: 'Moroccan natural products',
   place: 'Morocco',
   email: 'hello@tafuktpure.example',
   phone: '+212 0000 00000',
-  founded: 2026,
+}
+
+/** Temporary brand voice. Kept in one place so the final copy can replace it
+ *  without touching a page. No dates, origins or promises. */
+export const comingSoon = {
+  label: 'Coming soon',
+  title: 'Something beautiful is coming soon.',
+  line: 'Discover the spirit of Moroccan tradition.',
+  note: 'The TAFUKT PURE story is being written. Until it is ready, the pantry is open.',
 }
 
 export type Currency = 'EUR' | 'USD'
@@ -371,40 +389,37 @@ export const home = {
   discover: 'Discover the product',
   scroll: 'Scroll to discover',
   statement: {
-    eyebrow: 'Morocco, made by hand',
-    lead: 'Amlou, argan oil and honey from Morocco, made slowly and in small quantities.',
-    accent: 'The sun, in a jar.',
-    body: 'TAFUKT PURE gathers the everyday luxuries of the Moroccan table: stone-ground amlou, pressed argan oil, raw honey and the sweets we grew up with. Small batches, honest ingredients, and nothing added to hurry them.',
+    eyebrow: comingSoon.label,
+    lead: comingSoon.title,
+    accent: comingSoon.line,
+    body: comingSoon.note,
   },
-  bestsellers: { eyebrow: 'From the pantry', title: 'The jars we are known for', cta: 'See all products' },
-  categories: { eyebrow: 'Shop by shelf', title: 'Three shelves, one land' },
+  bestsellers: { eyebrow: 'From the pantry', title: 'A first look at the pantry', cta: 'See all products' },
+  categories: { eyebrow: 'Shop by shelf', title: 'Three shelves of the pantry' },
   story: {
     eyebrow: 'Our story',
-    title: 'The sun, the almond and the argan tree',
-    body: 'Tafukt means sun in Amazigh. Our emblem sets that sun inside the geometry of Amazigh craft: a mark for a house built on Moroccan ingredients, made slowly and by hand.',
+    title: 'Our story is still being written.',
+    body: comingSoon.line,
     cta: 'Read our story',
   },
   recipes: { eyebrow: 'In the kitchen', title: 'What to make with a jar', cta: 'All recipes' },
   promises: [
-    { title: 'Natural ingredients', body: 'Nuts, argan oil, honey and grain: ingredients we can name.' },
-    { title: 'Small batches', body: 'Made in short runs and filled by hand.' },
-    { title: 'Traditional methods', body: 'Slow toasting, stone grinding, hand folding.' },
-    { title: 'Packed with care', body: 'Sealed, labelled and sent from Morocco.' },
+    { title: 'Amlou & spreads', body: 'Almond, argan and toasted grain.' },
+    { title: 'Argan oil', body: 'Culinary and pure.' },
+    { title: 'Honey', body: 'Thyme and orange blossom.' },
+    { title: 'Moroccan sweets', body: 'Sellou, zammita and chebakia.' },
   ],
 }
 
 export const farm = {
   eyebrow: 'Our story',
-  title: 'Rooted in Morocco, made by hand',
-  intro:
-    'TAFUKT PURE brings together amlou, argan oil, honey and the sweets of the Moroccan table. We work in small quantities, with traditional methods and ingredients we can name, and we keep every jar close to the way it is made at home.',
-  timeline: [
-    { year: 'Amlou', title: 'Almonds, argan, honey', body: 'Almonds are toasted and ground slowly so the paste stays soft and the oils stay warm. Nothing is added to stretch it.' },
-    { year: 'Argan', title: 'Pressed in small lots', body: 'Kernels are roasted, ground and pressed in short runs, so each bottle keeps its own character.' },
-    { year: 'Honey', title: 'Chosen by flower and season', body: 'We pick honeys by the flower they come from and leave them raw, so their perfume stays intact.' },
-    { year: 'Sweets', title: 'Recipes from the family table', body: 'Sellou, zammita and chebakia are made to the recipes we grew up with, a batch at a time.' },
-    { year: 'Tafukt', title: 'The name', body: 'Tafukt means sun in Amazigh. Our emblem joins that sun with the geometry of Amazigh craft.' },
-  ],
+  title: comingSoon.title,
+  intro: comingSoon.line,
+  note: {
+    eyebrow: comingSoon.label,
+    title: 'The full story will live here.',
+    body: comingSoon.note,
+  },
   stats: [
     { value: 'Amlou', label: 'stone-ground almond spread' },
     { value: 'Argan', label: 'culinary and pure oil' },
@@ -421,9 +436,8 @@ export const farm = {
     { month: 'Oct', crop: 'Argan kernels' },
     { month: 'Dec', crop: 'Dates, preserved lemons' },
   ],
-  kitchenTitle: 'The workshop',
-  kitchenBody:
-    'Everything is made in small quantities: nuts toasted and ground the same day, honey warmed just enough to pour, cookies folded by hand. Jars are filled, labelled and checked one at a time.',
+  kitchenTitle: 'The workshop, coming soon.',
+  kitchenBody: 'More about the workshop will be published here. Until then, write to us with any question.',
   visitCta: 'Write to us',
 }
 
@@ -505,11 +519,11 @@ export const order = {
 }
 
 export const footer = {
-  newsletterTitle: 'Letters from Morocco',
-  newsletterBody: 'One email a season: what is in season, what is new in the pantry, and a recipe.',
+  newsletterTitle: 'Letters from TAFUKT PURE',
+  newsletterBody: 'The first letter is being written. Leave your email and we will send it as soon as it is ready.',
   newsletterPlaceholder: 'Your email',
   newsletterCta: 'Subscribe',
-  newsletterDone: 'Thank you. The next letter goes out with the first oranges.',
+  newsletterDone: 'Thank you. You will hear from us soon.',
   columns: [
     { title: 'Shop', links: [{ to: '/shop', label: 'All products' }, { to: '/shop?c=Spreads', label: 'Amlou & spreads' }, { to: '/shop?c=Oils', label: 'Argan oil' }, { to: '/shop?c=Sweets', label: 'Honey & sweets' }] },
     { title: 'House', links: [{ to: '/farm', label: 'Our story' }, { to: '/recipes', label: 'Recipes' }, { to: '/shop', label: 'The pantry' }] },
