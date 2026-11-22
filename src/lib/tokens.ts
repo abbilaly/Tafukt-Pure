@@ -25,7 +25,7 @@ export const colors = [
   { name: 'danger', hex: '#a8442a', use: 'Errors, sold out' },
 ]
 export const typeScale = [
-  { name: 'display', size: '76 / 1.0 Playfair', cls: 'font-serif text-[76px] leading-none text-wine', sample: 'Amlou Beldi' },
+  { name: 'display', size: '76 / 1.0 Playfair', cls: 'font-serif text-[76px] leading-none text-wine', sample: 'Almond Amlou' },
   { name: 'h1', size: '68 / 1.05 Playfair', cls: 'font-serif text-[68px] leading-[1.05] text-wine', sample: 'The pantry' },
   { name: 'h2', size: '52 / 1.05 Playfair', cls: 'font-serif text-[52px] leading-[1.05] text-wine', sample: 'Three shelves, one land' },
   { name: 'h3', size: '30 / 1.2 Playfair', cls: 'font-serif text-[30px] text-wine', sample: 'Order summary' },

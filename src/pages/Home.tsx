@@ -3,7 +3,7 @@ import { motion } from 'motion/react'
 import { useRef } from 'react'
 import { Link } from 'react-router'
 
-import { JarTile, ProductCard, RecipeCard } from '../components/Cards'
+import { JarTile, ProductRail, RecipeCard } from '../components/Cards'
 import { HeroCarousel } from '../components/HeroCarousel'
 import { Button, Container, Eyebrow, SectionHeading, Sprig } from '../components/ui'
 import { img } from '../content'
@@ -15,10 +15,10 @@ const rise = { initial: { opacity: 0, y: 28 }, whileInView: { opacity: 1, y: 0 }
 
 export function Home() {
   useTitle()
-  const { home, categories, products, recipes } = useContent()
+  const { home, categories, products, recipes, ui } = useContent()
   const stock = useStock()
   const next = useRef<HTMLDivElement>(null)
-  const best = ['amlou-beldi', 'miel-thym', 'chebakia', 'argan-grille'].map((s) => products.find((p) => p.slug === s)!)
+  const best = ['amlou-beldi', 'amlou-cashew', 'amlou-chocolate', 'amlou-peanut', 'zammita', 'chebakia', 'argan-oil'].map((s) => products.find((p) => p.slug === s)!)
   return (
     <>
       <HeroCarousel onScroll={() => next.current?.scrollIntoView({ behavior: 'smooth' })} />
@@ -46,12 +46,8 @@ export function Home() {
               {home.bestsellers.cta} <ArrowRight className="size-4 rtl:-scale-x-100" aria-hidden />
             </Button>
           </div>
-          <div className="mt-14 grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-            {best.map((p) => (
-              <motion.div key={p.slug} {...rise}>
-                <ProductCard product={p} stock={stock} />
-              </motion.div>
-            ))}
+          <div className="mt-14">
+            <ProductRail items={best} stock={stock} labels={{ label: ui.productsCarousel, prev: ui.previousProducts, next: ui.nextProducts }} />
           </div>
         </Container>
       </section>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" role="img" aria-label="Placeholder artwork for Zammita">
+  <!-- PLACEHOLDER ARTWORK — a drawn icon, not a photograph. Replace with an
+       original cut-out photo (same 3:4 ratio, transparent background) and point
+       the product's `image` at it. -->
+  <defs>
+    <linearGradient id="zammita-body" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4d5a33"/>
+      <stop offset=".55" stop-color="#3a4626"/>
+      <stop offset="1" stop-color="#28311a"/>
+    </linearGradient>
+  </defs>
+  <rect x="66" y="48" width="168" height="56" rx="16" fill="#2f3a22" stroke="#b08d57" stroke-width="2.5"/>
+  <path d="M78 74h144" fill="none" stroke="#b08d57" stroke-width="1.5" opacity=".55"/>
+  <rect x="96" y="100" width="108" height="28" fill="#2f3a22"/>
+  <rect x="38" y="126" width="224" height="248" rx="30" fill="url(#zammita-body)" stroke="#b08d57" stroke-width="2.5"/>
+  <rect x="46" y="188" width="208" height="130" fill="#f7f1e3"/>
+  <path d="M46 189h208M46 317h208" fill="none" stroke="#b08d57" stroke-width="3.5"/>
+  <g fill="none" stroke="#b08d57" stroke-width="2.8" stroke-linecap="round">
+    <path d="M150 300V216"/>
+    <path d="M150 272c-15-2-23-10-25-23 14 2 22 9 25 21M150 272c15-2 23-10 25-23-14 2-22 9-25 21"/>
+    <path d="M150 244c-12-2-19-9-21-19 11 2 18 8 21 17M150 244c12-2 19-9 21-19-11 2-18 8-21 17"/>
+    <path d="M150 224c-8-2-13-6-14-13 8 2 12 6 14 11M150 224c8-2 13-6 14-13-8 2-12 6-14 11"/>
+  </g>
+  <path d="M62 352h176" fill="none" stroke="#1c2414" stroke-width="7" stroke-linecap="round" opacity=".18"/>
+</svg>

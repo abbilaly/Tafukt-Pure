@@ -275,11 +275,11 @@ export function StyleGuide() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <ProductCard product={products[0]} />
           <ProductCard product={products[1]} stock={{ status: 'ready', stock: { [products[1].slug]: 4 } }} />
-          <ProductCard product={products[6]} stock={{ status: 'ready', stock: { [products[6].slug]: 0 } }} />
+          <ProductCard product={products[3]} stock={{ status: 'ready', stock: { [products[3].slug]: 0 } }} />
           <RecipeCard recipe={recipes[0]} />
         </div>
         <div className="mt-6 grid grid-cols-3 gap-4 sm:grid-cols-6">
-          {products.slice(2, 8).map((p) => (
+          {products.slice(2, 7).map((p) => (
             <JarTile key={p.slug} product={p} className="aspect-square rounded-field" />
           ))}
         </div>

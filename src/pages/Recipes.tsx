@@ -121,15 +121,19 @@ export function RecipePage() {
                         <p className="font-serif text-[20px] text-wine">{p.name}</p>
                         <p className="text-[14px] text-muted">{p.kind}</p>
                       </div>
-                      <Button
-                        size="md"
-                        onClick={() => {
-                          add(p, p.sizes[0].id)
-                          toast(ui.addedToast(p.name), 'success')
-                        }}
-                      >
-                        {ui.addShort}
-                      </Button>
+                      {p.priceTbc ? (
+                        <span className="text-[12px] font-bold uppercase tracking-[0.08em] text-flame-text">{ui.comingSoon}</span>
+                      ) : (
+                        <Button
+                          size="md"
+                          onClick={() => {
+                            add(p, p.sizes[0].id)
+                            toast(ui.addedToast(p.name), 'success')
+                          }}
+                        >
+                          {ui.addShort}
+                        </Button>
+                      )}
                     </li>
                   ) : null,
                 )}

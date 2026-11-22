@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" role="img" aria-label="Placeholder artwork for Argan Oil">
+  <!-- PLACEHOLDER ARTWORK — a drawn icon, not a photograph. Replace with an
+       original cut-out photo (same 3:4 ratio, transparent background) and point
+       the product's `image` at it. -->
+  <defs>
+    <linearGradient id="argan-body" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4d5a33"/>
+      <stop offset=".5" stop-color="#39451f"/>
+      <stop offset="1" stop-color="#25301a"/>
+    </linearGradient>
+  </defs>
+  <rect x="110" y="46" width="80" height="54" rx="14" fill="#b08d57" stroke="#7f6134" stroke-width="2"/>
+  <path d="M118 66h64" fill="none" stroke="#7f6134" stroke-width="1.6" opacity=".5"/>
+  <rect x="128" y="98" width="44" height="50" fill="#2f3a22"/>
+  <rect x="98" y="146" width="104" height="234" rx="26" fill="url(#argan-body)" stroke="#b08d57" stroke-width="2.5"/>
+  <path d="M98 171h104" fill="none" stroke="#232b18" stroke-width="6" opacity=".3"/>
+  <rect x="108" y="204" width="84" height="122" fill="#f7f1e3"/>
+  <path d="M108 205h84M108 325h84" fill="none" stroke="#b08d57" stroke-width="3.5"/>
+  <path d="M150 226c13 17 21 28 21 38a21 21 0 1 1-42 0c0-10 8-21 21-38z" fill="#b08d57"/>
+  <path d="M126 306h48M138 316h24" fill="none" stroke="#b08d57" stroke-width="2.6" stroke-linecap="round"/>
+  <path d="M112 352h76" fill="none" stroke="#1c2414" stroke-width="7" opacity=".18" stroke-linecap="round"/>
+</svg>

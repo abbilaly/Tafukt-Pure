@@ -61,9 +61,7 @@ type Lang = keyof typeof MSG
 
 // Seed stock levels per product. 0 = sold out, below 6 = "only N left".
 const STOCK: Record<string, number> = Object.fromEntries(products.map((p) => [p.slug, 40]))
-STOCK['argan-grille'] = 4
-STOCK['sellou'] = 0
-STOCK['miel-thym'] = 5
+STOCK['argan-oil'] = 4
 
 app.get('/api/health', (c) => c.json({ ok: true }))
 

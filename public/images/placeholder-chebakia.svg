@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" role="img" aria-label="Placeholder artwork for Chebakia">
+  <!-- PLACEHOLDER ARTWORK — a drawn icon, not a photograph. Replace with an
+       original cut-out photo (same 3:4 ratio, transparent background) and point
+       the product's `image` at it. -->
+  <defs>
+    <linearGradient id="chebakia-body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3d4a29"/>
+      <stop offset="1" stop-color="#232b18"/>
+    </linearGradient>
+  </defs>
+  <path d="M26 138v166a124 38 0 0 0 248 0V138z" fill="url(#chebakia-body)" stroke="#b08d57" stroke-width="2.5"/>
+  <ellipse cx="150" cy="138" rx="124" ry="38" fill="#4b5834" stroke="#b08d57" stroke-width="2.5"/>
+  <ellipse cx="150" cy="138" rx="102" ry="26" fill="none" stroke="#b08d57" stroke-width="1.6" opacity=".55"/>
+  <path d="M26 296a124 38 0 0 0 248 0" fill="none" stroke="#b08d57" stroke-width="1.8" opacity=".4"/>
+  <g fill="#dcc9a0" stroke="#b08d57" stroke-width="2.4">
+    <circle cx="150" cy="178" r="21"/>
+    <circle cx="179" cy="195" r="21"/>
+    <circle cx="179" cy="229" r="21"/>
+    <circle cx="150" cy="246" r="21"/>
+    <circle cx="121" cy="229" r="21"/>
+    <circle cx="121" cy="195" r="21"/>
+  </g>
+  <circle cx="150" cy="212" r="16" fill="#b08d57"/>
+</svg>

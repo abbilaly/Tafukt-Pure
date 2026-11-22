@@ -57,22 +57,24 @@ function ProductView({ slug }: { slug: string }) {
           </div>
           <h1 className="mt-5 font-serif text-[52px] leading-none text-wine md:text-[76px]">{product.name}</h1>
           <p className="mt-3 font-serif text-[24px] italic text-flame-text">{product.kind}</p>
-          <p className="mt-6 font-serif text-[34px] tabular-nums text-wine">{format(price)}</p>
+          <p className={product.priceTbc ? 'mt-6 font-serif text-[24px] italic text-flame-text' : 'mt-6 font-serif text-[34px] tabular-nums text-wine'}>{product.priceTbc ? ui.priceTbc : format(price)}</p>
           <p className="mt-6 text-[17px] leading-relaxed text-muted">{product.description}</p>
 
-          <fieldset className="mt-8">
-            <legend className="text-[13px] font-semibold text-wine">{copy.sizes}</legend>
-            <div className="mt-2 grid gap-2 sm:grid-cols-2">
-              {product.sizes.map((s) => (
-                <OptionCard key={s.id} name="size" value={s.id} checked={size === s.id} onChange={setSize} title={s.label} detail={format(s.price)} />
-              ))}
-            </div>
-          </fieldset>
+          {!product.priceTbc && (
+            <fieldset className="mt-8">
+              <legend className="text-[13px] font-semibold text-wine">{copy.sizes}</legend>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                {product.sizes.map((s) => (
+                  <OptionCard key={s.id} name="size" value={s.id} checked={size === s.id} onChange={setSize} title={s.label} detail={format(s.price)} />
+                ))}
+              </div>
+            </fieldset>
+          )}
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <QtyStepper label={copy.quantity} value={qty} onChange={setQty} max={n !== null && n > 0 ? Math.min(12, n) : 12} />
-            <Button size="lg" className="min-w-56 flex-1" disabled={soldOut} onClick={onAdd}>
-              {soldOut ? copy.soldOut : added ? (
+            {!product.priceTbc && <QtyStepper label={copy.quantity} value={qty} onChange={setQty} max={n !== null && n > 0 ? Math.min(12, n) : 12} />}
+            <Button size="lg" className="min-w-56 flex-1" disabled={product.priceTbc || soldOut} onClick={onAdd}>
+              {product.priceTbc ? ui.comingSoon : soldOut ? copy.soldOut : added ? (
                 <>
                   <Check className="size-4" aria-hidden /> {copy.added}
                 </>
@@ -87,7 +89,7 @@ function ProductView({ slug }: { slug: string }) {
             </button>
           )}
 
-          <p className="mt-4 flex min-h-6 items-center gap-2 text-[14px] font-medium" aria-live="polite">
+          <p hidden={product.priceTbc} className="mt-4 flex min-h-6 items-center gap-2 text-[14px] font-medium" aria-live="polite">
             {stock.status === 'loading' ? (
               <>
                 <Skeleton className="h-4 w-44 !rounded-full" />
@@ -113,7 +115,7 @@ function ProductView({ slug }: { slug: string }) {
               <dt className="text-[13px] font-bold uppercase tracking-[0.14em] text-wine">{copy.ingredients}</dt>
               <dd className="text-[15px] text-muted">{product.ingredients}</dd>
             </div>
-            <div className="grid gap-2 py-5 sm:grid-cols-[160px_1fr]">
+            <div hidden={product.pairings.length === 0} className="grid gap-2 py-5 sm:grid-cols-[160px_1fr]">
               <dt className="text-[13px] font-bold uppercase tracking-[0.14em] text-wine">{copy.pairings}</dt>
               <dd className="flex flex-wrap gap-2">
                 {product.pairings.map((p) => (
