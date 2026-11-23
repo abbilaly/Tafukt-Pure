@@ -3,8 +3,9 @@ import { useState } from 'react'
 import { useParams, useSearchParams } from 'react-router'
 
 import { JarTile, RecipeCard } from '../components/Cards'
+import { Img } from '../components/Img'
 import { Button, Chip, Container, Crumb, EmptyState, SectionHeading } from '../components/ui'
-import { img, type Course } from '../content'
+import type { Course } from '../content'
 import { useContent } from '../lib/lang'
 import { useStore } from '../lib/store'
 import { useTitle } from '../lib/title'
@@ -63,7 +64,7 @@ export function RecipePage() {
         <Crumb to="/recipes">{ui.allCourses}</Crumb>
       </Container>
       <Container className="grid gap-12 pb-24 pt-6 lg:grid-cols-[1fr_1fr] lg:gap-20">
-        <img src={img(recipe.image)} alt={recipe.title} className="aspect-square w-full rounded-[999px_999px_32px_32px] object-cover lg:sticky lg:top-6" />
+        <Img name={recipe.image} eager alt={recipe.title} sizes="(min-width: 1024px) 45vw, 100vw" className="aspect-square w-full rounded-[999px_999px_32px_32px] object-cover lg:sticky lg:top-6" />
         <div>
           <p className="flex flex-wrap items-center gap-4 text-[14px] font-semibold text-flame-text">
             <span>{ui.courses[recipe.course]}</span>
@@ -116,13 +117,13 @@ export function RecipePage() {
                 {products.map((p) =>
                   p ? (
                     <li key={p.slug} className="flex items-center gap-4">
-                      <JarTile product={p} className="size-20 shrink-0 rounded-field" />
+                      <JarTile product={p} sizes="80px" className="size-20 shrink-0 rounded-field" />
                       <div className="flex-1">
                         <p className="font-serif text-[20px] text-wine">{p.name}</p>
                         <p className="text-[14px] text-muted">{p.kind}</p>
                       </div>
-                      {p.priceTbc ? (
-                        <span className="text-[12px] font-bold uppercase tracking-[0.08em] text-flame-text">{ui.comingSoon}</span>
+                      {p.priceTbc || p.sizes[0].price === undefined ? (
+                        <span className="text-[12px] font-bold uppercase tracking-[0.08em] text-flame-text">{p.priceTbc ? ui.comingSoon : ui.pricePending}</span>
                       ) : (
                         <Button
                           size="md"

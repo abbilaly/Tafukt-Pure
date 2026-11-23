@@ -14,6 +14,8 @@ export const PROMOS: Record<string, { percent: number; label: string }> = {
 
 export const productBySlug = (slug: string): Product | undefined => products.find((p) => p.slug === slug)
 export const sizeOf = (p: Product, id: string): Size | undefined => p.sizes.find((s) => s.id === id)
+/** True once the owner has published a price for this size. */
+export const isPriced = (s: Size): s is Size & { price: number } => typeof s.price === 'number'
 
 export function resolve(lines: Line[]) {
   return lines.flatMap((l) => {
@@ -21,7 +23,7 @@ export function resolve(lines: Line[]) {
     const size = product && sizeOf(product, l.size)
     if (!product || !size) return []
     const qty = Math.max(1, Math.min(MAX_QTY, Math.round(l.qty)))
-    return [{ ...l, qty, product, sizeInfo: size, lineTotal: size.price * qty }]
+    return [{ ...l, qty, product, sizeInfo: size, pricePending: !isPriced(size), lineTotal: isPriced(size) ? size.price * qty : 0 }]
   })
 }
 
@@ -33,7 +35,8 @@ export function totals(lines: Line[], shippingId: string, promoCode: string | nu
   const option = bag.shippingOptions.find((o) => o.id === shippingId) ?? bag.shippingOptions[0]
   const free = option.id === 'standard' && subtotal - discount >= bag.freeOver
   const shipping = items.length === 0 || free ? 0 : option.price
-  return { items, subtotal, discount, shipping, free, option, total: round(subtotal - discount + shipping), count: items.reduce((n, i) => n + i.qty, 0) }
+  const pending = items.filter((i) => i.pricePending).length
+  return { items, subtotal, discount, shipping, free, option, pending, total: round(subtotal - discount + shipping), count: items.reduce((n, i) => n + i.qty, 0) }
 }
 
 const round = (n: number) => Math.round(n * 100) / 100

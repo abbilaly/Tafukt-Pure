@@ -6,7 +6,7 @@ import { Link } from 'react-router'
 import { JarTile, ProductRail, RecipeCard } from '../components/Cards'
 import { HeroCarousel } from '../components/HeroCarousel'
 import { Button, Container, Eyebrow, SectionHeading, Sprig } from '../components/ui'
-import { img } from '../content'
+import { Img } from '../components/Img'
 import { useContent } from '../lib/lang'
 import { useStock } from '../lib/stock'
 import { useTitle } from '../lib/title'
@@ -61,7 +61,7 @@ export function Home() {
               return (
                 <motion.div key={c.id} {...rise}>
                   <Link to={`/shop?c=${c.id}`} className="group block rounded-card">
-                    <JarTile product={p} className="aspect-[4/5] rounded-[999px_999px_22px_22px] [&_.jar]:group-hover:-translate-y-3 [&_.jar]:group-hover:rotate-[4deg]" />
+                    <JarTile product={p} sizes="(min-width: 768px) 31vw, 100vw" className="aspect-[4/5] rounded-[999px_999px_22px_22px] [&_.jar]:group-hover:-translate-y-3 [&_.jar]:group-hover:rotate-[4deg]" />
                     <div className="mt-5 flex items-center justify-between gap-4">
                       <div>
                         <h3 className="font-serif text-[30px] text-wine">{c.title}</h3>
@@ -81,7 +81,7 @@ export function Home() {
 
       <section className="on-dark bg-maroon-deep text-on-dark">
         <div className="grid md:grid-cols-2">
-          <img src={img('farm-hill')} alt="Stone terraces and olive trees on a Moroccan hillside at sunset" loading="lazy" className="h-[420px] w-full object-cover md:h-full md:min-h-[640px]" />
+          <Img name="farm-hill" alt="Stone terraces and olive trees on a Moroccan hillside at sunset" sizes="(min-width: 768px) 50vw, 100vw" className="h-[420px] w-full object-cover md:h-full md:min-h-[640px]" />
           <div className="flex flex-col justify-center px-4 py-20 md:px-16 lg:px-24">
             <SectionHeading eyebrow={home.story.eyebrow} title={home.story.title} dark>
               <p>{home.story.body}</p>

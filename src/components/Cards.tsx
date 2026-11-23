@@ -2,11 +2,12 @@ import { ChevronLeft, ChevronRight, Clock, Plus, Users } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
 
-import { img, type Product, type Recipe } from '../content'
+import type { Product, Recipe } from '../content'
 import { cx } from '../lib/cx'
 import { useContent } from '../lib/lang'
 import { useStore } from '../lib/store'
 import type { StockState } from '../lib/stock'
+import { Img } from './Img'
 import { Badge, IconButton } from './ui'
 
 /**
@@ -14,10 +15,19 @@ import { Badge, IconButton } from './ui'
  * imagery stays wordless and the owner can rename products freely. Size it
  * with a height (or width for crates) on `className`.
  */
-export function Jar({ product, className, eager, alt, speak }: { product: Product; className?: string; eager?: boolean; alt?: string; speak?: boolean }) {
+export function Jar({ product, className, eager, priority, sizes, alt, speak }: { product: Product; className?: string; eager?: boolean; priority?: boolean; sizes?: string; alt?: string; speak?: boolean }) {
   return (
     <span className={cx('relative block [container-type:size]', className)} style={{ aspectRatio: product.aspect }}>
-      <img src={img(product.image)} alt={alt ?? `${product.name}, ${product.kind}`} loading={eager ? 'eager' : 'lazy'} draggable={false} className={cx('absolute inset-0 size-full', product.fit === 'cover' ? 'object-cover' : 'object-contain')} />
+      {/* `zoom` enlarges a cut-out with wide transparent margins as a whole, never cropping it. */}
+      <Img
+        name={product.image}
+        sizes={sizes ?? '(min-width: 1280px) 25vw, (min-width: 640px) 45vw, 78vw'}
+        alt={alt ?? `${product.name}, ${product.kind}`}
+        eager={eager}
+        priority={priority}
+        className={cx('absolute inset-0 size-full', product.fit === 'cover' ? 'object-cover' : 'object-contain')}
+        style={product.zoom ? { transform: `scale(${product.zoom})` } : undefined}
+      />
       {product.label && (
         <span
           aria-hidden={!speak}
@@ -33,12 +43,12 @@ export function Jar({ product, className, eager, alt, speak }: { product: Produc
 }
 
 /** A jar standing on its label-coloured tile. */
-export function JarTile({ product, className, tilt = 0, eager }: { product: Product; className?: string; tilt?: number; eager?: boolean }) {
+export function JarTile({ product, className, tilt = 0, eager, sizes }: { product: Product; className?: string; tilt?: number; eager?: boolean; sizes?: string }) {
   return (
     <div className={cx('relative grid place-items-center overflow-hidden [container-type:size]', className)} style={{ background: product.tint }}>
       <span aria-hidden className="absolute inset-x-[12%] bottom-[-30%] aspect-square rounded-full bg-white/25" />
       <span className="jar relative transition-transform duration-500 ease-out drop-shadow-[0_24px_24px_rgb(35_43_24/0.28)]" style={{ rotate: `${tilt}deg` }}>
-        <Jar product={product} eager={eager} className="h-[72cqh]" />
+        <Jar product={product} eager={eager} sizes={sizes} className="h-[72cqh]" />
       </span>
     </div>
   )
@@ -62,18 +72,25 @@ export function ProductCard({ product, stock }: { product: Product; stock?: Stoc
         <div className="absolute left-4 top-4 flex flex-wrap gap-1.5">
           {soldOut ? <Badge tone="wine">{ui.soldOut}</Badge> : !coming && n !== null && n < 6 ? <Badge tone="cream">{ui.onlyLeft(n)}</Badge> : product.badges[0] ? <Badge tone="cream">{product.badges[0]}</Badge> : null}
         </div>
-        <IconButton
-          label={coming ? ui.comingSoon : soldOut ? ui.soldOutToast(product.name) : ui.addToBag(product.name)}
-          size="md"
-          disabled={coming || soldOut}
-          className="!absolute bottom-4 end-4 z-10 shadow-pill"
-          onClick={() => {
-            add(product, from.id)
-            toast(ui.addedToast(product.name), 'success')
-          }}
-        >
-          <Plus className="size-5" aria-hidden />
-        </IconButton>
+        {!coming && from.price === undefined ? (
+          // No price yet: the size has to be chosen on the product page first.
+          <Link to={`/shop/${product.slug}`} aria-label={ui.chooseSize(product.name)} className="absolute bottom-4 end-4 z-10 grid size-11 place-items-center rounded-full bg-white text-wine shadow-pill transition-colors hover:bg-wine hover:text-on-dark">
+            <Plus className="size-5" aria-hidden />
+          </Link>
+        ) : (
+          <IconButton
+            label={coming ? ui.comingSoon : soldOut ? ui.soldOutToast(product.name) : ui.addToBag(product.name)}
+            size="md"
+            disabled={coming || soldOut}
+            className="!absolute bottom-4 end-4 z-10 shadow-pill"
+            onClick={() => {
+              add(product, from.id)
+              toast(ui.addedToast(product.name), 'success')
+            }}
+          >
+            <Plus className="size-5" aria-hidden />
+          </IconButton>
+        )}
       </div>
       <div className="mt-4 flex items-start justify-between gap-3">
         <div>
@@ -86,6 +103,8 @@ export function ProductCard({ product, stock }: { product: Product; stock?: Stoc
         </div>
         {coming ? (
           <p className="shrink-0 whitespace-nowrap pt-1 text-[12px] font-bold uppercase tracking-[0.08em] text-flame-text">{ui.comingSoon}</p>
+        ) : from.price === undefined ? (
+          <p className="shrink-0 whitespace-nowrap pt-1 text-[12px] font-bold uppercase tracking-[0.08em] text-flame-text">{ui.pricePending}</p>
         ) : (
           <p className="pt-1 text-[15px] font-semibold tabular-nums text-wine">{format(from.price)}</p>
         )}
@@ -177,7 +196,7 @@ export function RecipeCard({ recipe, className }: { recipe: Recipe; className?: 
   return (
     <article className={cx('group relative flex flex-col', className)}>
       <div className="overflow-hidden rounded-[999px_999px_22px_22px]">
-        <img src={img(recipe.image)} alt="" loading="lazy" className="aspect-[4/5] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
+        <Img name={recipe.image} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw" className="aspect-[4/5] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
       </div>
       <div className="mt-4 flex items-center gap-4 text-[13px] font-semibold text-flame-text">
         <span>{ui.courses[recipe.course]}</span>

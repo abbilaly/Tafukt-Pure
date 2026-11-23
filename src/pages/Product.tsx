@@ -29,7 +29,7 @@ function ProductView({ slug }: { slug: string }) {
   const [added, setAdded] = useState(false)
   const n = stockFor(stock, product.slug)
   const soldOut = n === 0
-  const price = product.sizes.find((s) => s.id === size)!.price
+  const price = product.sizes.find((s) => s.id === size)?.price
   const related = products.filter((p) => p.category === product.category && p.slug !== product.slug).slice(0, 4)
   const cook = recipes.filter((r) => r.products.includes(product.slug))
 
@@ -47,7 +47,7 @@ function ProductView({ slug }: { slug: string }) {
       </Container>
       <Container className="grid gap-10 pb-24 pt-6 lg:grid-cols-[1.1fr_1fr] lg:gap-20">
         <div className="lg:sticky lg:top-6 lg:self-start">
-          <JarTile product={product} eager tilt={-4} className="aspect-square rounded-panel md:aspect-[5/5]" />
+          <JarTile product={product} eager sizes="(min-width: 1024px) 45vw, 90vw" tilt={-4} className="aspect-square rounded-panel md:aspect-[5/5]" />
         </div>
         <div className="flex flex-col">
           <div className="flex flex-wrap gap-2">
@@ -57,7 +57,7 @@ function ProductView({ slug }: { slug: string }) {
           </div>
           <h1 className="mt-5 font-serif text-[52px] leading-none text-wine md:text-[76px]">{product.name}</h1>
           <p className="mt-3 font-serif text-[24px] italic text-flame-text">{product.kind}</p>
-          <p className={product.priceTbc ? 'mt-6 font-serif text-[24px] italic text-flame-text' : 'mt-6 font-serif text-[34px] tabular-nums text-wine'}>{product.priceTbc ? ui.priceTbc : format(price)}</p>
+          <p className={product.priceTbc || price === undefined ? 'mt-6 font-serif text-[24px] italic text-flame-text' : 'mt-6 font-serif text-[34px] tabular-nums text-wine'}>{product.priceTbc ? ui.priceTbc : price === undefined ? ui.pricePending : format(price)}</p>
           <p className="mt-6 text-[17px] leading-relaxed text-muted">{product.description}</p>
 
           {!product.priceTbc && (
@@ -65,9 +65,12 @@ function ProductView({ slug }: { slug: string }) {
               <legend className="text-[13px] font-semibold text-wine">{copy.sizes}</legend>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 {product.sizes.map((s) => (
-                  <OptionCard key={s.id} name="size" value={s.id} checked={size === s.id} onChange={setSize} title={s.label} detail={format(s.price)} />
+                  <OptionCard key={s.id} name="size" value={s.id} checked={size === s.id} onChange={setSize} title={s.label} detail={s.price === undefined ? ui.pricePending : format(s.price)} />
                 ))}
               </div>
+              <p className="mt-3 text-[14px] text-muted" aria-live="polite">
+                {copy.selected}: <span className="font-semibold text-wine">{product.sizes.find((s) => s.id === size)?.label}</span>
+              </p>
             </fieldset>
           )}
 
@@ -79,7 +82,7 @@ function ProductView({ slug }: { slug: string }) {
                   <Check className="size-4" aria-hidden /> {copy.added}
                 </>
               ) : (
-                `${copy.add} · ${format(price * qty)}`
+                price === undefined ? copy.add : `${copy.add} · ${format(price * qty)}`
               )}
             </Button>
           </div>

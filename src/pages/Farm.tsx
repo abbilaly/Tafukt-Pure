@@ -1,5 +1,5 @@
+import { Img } from '../components/Img'
 import { Button, Container, Eyebrow, SectionHeading, Sprig } from '../components/ui'
-import { img } from '../content'
 import { useContent } from '../lib/lang'
 import { useTitle } from '../lib/title'
 
@@ -26,13 +26,13 @@ export function Farm() {
       </Container>
 
       <div className="relative">
-        <img src={img('farm-hill')} alt="A farmhouse and its stone terraces on a Moroccan hillside" className="h-[60vh] min-h-[360px] w-full object-cover" />
+        <Img name="farm-hill" eager alt="A farmhouse and its stone terraces on a Moroccan hillside" sizes="100vw" className="h-[60vh] min-h-[360px] w-full object-cover" />
       </div>
 
       <section className="py-24 md:py-32">
         <Container className="grid gap-16 lg:grid-cols-[0.8fr_1.2fr]">
           <div className="lg:sticky lg:top-10 lg:self-start">
-            <img src={img('harvest')} alt="Hands picking fruit into a wicker basket" loading="lazy" className="aspect-[3/4] w-full rounded-[999px_999px_22px_22px] object-cover" />
+            <Img name="harvest" alt="Hands picking fruit into a wicker basket" sizes="(min-width: 1024px) 40vw, 100vw" className="aspect-[3/4] w-full rounded-[999px_999px_22px_22px] object-cover" />
           </div>
           <div className="flex flex-col justify-center">
             <Eyebrow>{farm.note.eyebrow}</Eyebrow>
@@ -59,7 +59,7 @@ export function Farm() {
 
       <section id="visit" className="scroll-mt-6 py-24 md:py-32">
         <Container className="grid gap-12 lg:grid-cols-2 lg:items-center">
-          <img src={img('kitchen')} alt="Rows of freshly filled jars on the workshop table" loading="lazy" className="aspect-[3/2] w-full rounded-card object-cover" />
+          <Img name="kitchen" alt="Rows of freshly filled jars on the workshop table" sizes="(min-width: 1024px) 50vw, 100vw" className="aspect-[3/2] w-full rounded-card object-cover" />
           <div>
             <Eyebrow>{ui.visitEyebrow}</Eyebrow>
             <h2 className="mt-4 font-serif text-[40px] leading-tight text-wine md:text-[52px]">{farm.kitchenTitle}</h2>

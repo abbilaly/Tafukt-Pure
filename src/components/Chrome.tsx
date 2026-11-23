@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useState, type FormEvent } from 'react'
 import { Link, NavLink, useLocation } from 'react-router'
 
-import { currencies, img } from '../content'
+import { currencies } from '../content'
 import { LANGS, currencyLabelsAr } from '../content.i18n'
 import { post } from '../lib/api'
 import { cx } from '../lib/cx'
@@ -11,6 +11,7 @@ import { useFocusTrap } from '../lib/focus'
 import { useContent } from '../lib/lang'
 import { useStore } from '../lib/store'
 import { Logo } from './Brand'
+import { Img } from './Img'
 import { Button, IconButton, QtyStepper } from './ui'
 
 export function CurrencySwitch({ dark }: { dark?: boolean }) {
@@ -220,7 +221,7 @@ export function BagDrawer() {
                     return (
                       <li key={i.slug + i.size} className="flex gap-4 py-5">
                         <Link to={`/shop/${i.slug}`} onClick={() => setBagOpen(false)} className="grid size-20 shrink-0 place-items-center rounded-field" style={{ background: i.product.tint }}>
-                          <img src={img(i.product.image)} alt="" className="h-16 w-auto object-contain" />
+                          <Img name={i.product.image} sizes="64px" className="h-16 w-auto object-contain" />
                         </Link>
                         <div className="flex min-w-0 flex-1 flex-col gap-2">
                           <div className="flex items-start justify-between gap-2">

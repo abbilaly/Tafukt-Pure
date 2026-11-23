@@ -11,10 +11,10 @@
 //   3. `products[].short` / `description` and `recipesPage.intro` — catalogue.
 // Every field has an Arabic counterpart in content.i18n.ts; keep both in step.
 
-/** All imagery routes through this one helper. Swap the files in
- *  public/images (same names) for real photography, or point IMAGE_BASE at a CDN. */
-const IMAGE_BASE = '/images'
-export const img = (name: string) => (`${IMAGE_BASE}/${name}`.match(/\.(png|jpe?g|webp|avif|svg)$/i) ? `${IMAGE_BASE}/${name}` : `${IMAGE_BASE}/${name}.webp`)
+// Images: every picture is a responsive WebP set in public/images, generated
+// from the owner's untouched originals (kept in assets/originals) by
+// `bun run images:optimize`. The `image` fields below hold the file stem only;
+// <Img> resolves the srcset, the intrinsic size and the lazy/eager loading.
 
 export const brand = {
   name: 'TAFUKT PURE',
@@ -50,12 +50,14 @@ export const nav = [
 
 export type Category = 'Spreads' | 'Oils' | 'Sweets'
 export const categories: { id: Category; title: string; blurb: string; image: string; tint: string }[] = [
-  { id: 'Spreads', title: 'Amlou & spreads', blurb: 'Almonds and argan, ground slowly.', image: 'amlou-almond.png', tint: '#dcc9a0' },
-  { id: 'Oils', title: 'Argan oil', blurb: 'Pressed in small lots, for the kitchen and the skin.', image: 'placeholder-argan-oil.svg', tint: '#e2d3a8' },
-  { id: 'Sweets', title: 'Traditional sweets', blurb: 'Chebakia and the sweets of the Moroccan table.', image: 'placeholder-chebakia.svg', tint: '#e6d0a4' },
+  { id: 'Spreads', title: 'Amlou & spreads', blurb: 'Almonds and argan, ground slowly.', image: 'amlou-almond', tint: '#dcc9a0' },
+  { id: 'Oils', title: 'Argan oil', blurb: 'Pressed in small lots, for the kitchen and the skin.', image: 'argan-oil', tint: '#e2d3a8' },
+  { id: 'Sweets', title: 'Traditional sweets', blurb: 'Chebakia and the sweets of the Moroccan table.', image: 'chebakia', tint: '#e6d0a4' },
 ]
 
-export type Size = { id: string; label: string; price: number }
+/** A package size. `price` is in euro and is left out while the owner has not
+ *  confirmed it: the storefront then reads "Price pending" and shows no amount. */
+export type Size = { id: string; label: string; price?: number }
 export type Product = {
   slug: string
   name: string
@@ -67,6 +69,10 @@ export type Product = {
   /** How the file fills its box. Photographs with transparent margins around the
    *  product use 'cover' so the whole jar shows at a consistent size. */
   fit?: 'contain' | 'cover'
+  /** Uniform enlargement of a cut-out whose file has wide transparent margins,
+   *  so it sits at the same visual size as the other products. Never crops: the
+   *  whole image is scaled, proportions and transparency untouched. */
+  zoom?: number
   /** Price not published yet: the card and the product page show "Coming soon"
    *  and the product cannot be added to the bag. Pair it with a placeholder
    *  image in public/images until the owner supplies the real photograph. */
@@ -98,13 +104,14 @@ export const products: Product[] = [
     name: 'Almond Amlou',
     kind: 'Almond & argan spread',
     category: 'Spreads',
-    image: 'amlou-almond.png',
+    image: 'amlou-almond',
     tint: '#dcc9a0',
     tintInk: '#3d3320',
     ring: 'AMLOU · ALMOND & ARGAN · ',
     sizes: [
-      { id: '190', label: '190 g jar', price: 12.5 },
-      { id: '3x190', label: 'Three jars', price: 33 },
+      { id: '250', label: '250 g' },
+      { id: '500', label: '500 g' },
+      { id: '1kg', label: '1 kg' },
     ],
     short: 'Toasted almonds, argan oil and a little honey.',
     description:
@@ -122,13 +129,14 @@ export const products: Product[] = [
     name: 'Cashew Amlou',
     kind: 'Cashew & argan spread',
     category: 'Spreads',
-    image: 'amlou-cashew.png',
+    image: 'amlou-cashew',
     tint: '#dfcba4',
     tintInk: '#3d3320',
     ring: 'AMLOU · CASHEW · ',
     sizes: [
-      { id: '190', label: '190 g jar', price: 13.5 },
-      { id: '3x190', label: 'Three jars', price: 35 },
+      { id: '250', label: '250 g' },
+      { id: '500', label: '500 g' },
+      { id: '1kg', label: '1 kg' },
     ],
     short: 'Toasted cashews, argan oil and a little honey.',
     description:
@@ -146,13 +154,14 @@ export const products: Product[] = [
     name: 'Chocolate Amlou',
     kind: 'Cocoa & almond spread',
     category: 'Spreads',
-    image: 'amlou-chocolate.png',
+    image: 'amlou-chocolate',
     tint: '#c9b393',
     tintInk: '#3a2f1c',
     ring: 'AMLOU · CHOCOLATE · ',
     sizes: [
-      { id: '190', label: '190 g jar', price: 14 },
-      { id: '3x190', label: 'Three jars', price: 36 },
+      { id: '250', label: '250 g' },
+      { id: '500', label: '500 g' },
+      { id: '1kg', label: '1 kg' },
     ],
     short: 'Toasted almonds and cocoa, ground with argan oil and honey.',
     description:
@@ -170,13 +179,14 @@ export const products: Product[] = [
     name: 'Peanut Amlou',
     kind: 'Peanut & argan spread',
     category: 'Spreads',
-    image: 'amlou-peanut.png',
+    image: 'amlou-peanut',
     tint: '#d8bd93',
     tintInk: '#3d3120',
     ring: 'AMLOU · PEANUT · ',
     sizes: [
-      { id: '190', label: '190 g jar', price: 10.5 },
-      { id: '3x190', label: 'Three jars', price: 27 },
+      { id: '250', label: '250 g' },
+      { id: '500', label: '500 g' },
+      { id: '1kg', label: '1 kg' },
     ],
     short: 'Toasted peanuts, argan oil and a little honey.',
     description:
@@ -188,20 +198,21 @@ export const products: Product[] = [
     recipes: [],
   },
   // ── The three new products, in the order they should follow the amlou ──
-  // PLACEHOLDERS. No price, ingredients or claims are published for these yet:
-  // `priceTbc` shows "Coming soon" and blocks the bag, and each `image` is a
-  // drawn placeholder (public/images/placeholder-*.svg).
-  // To go live: drop the owner's cut-out photo in public/images (transparent
-  // background, ~300×400), point `image` at it, set `aspect` to its width /
-  // height, then replace `priceTbc` with real `sizes` and fill in the copy.
+  // The owner's cut-out photographs: 1911×2560 transparent originals, served
+  // as the responsive WebP set in public/images and shown whole and
+  // undistorted. No price, ingredients or claims are published for these
+  // yet: `priceTbc` shows "Coming soon" and blocks the bag.
+  // To go live: replace `priceTbc` with real `sizes` and fill in the copy.
   {
     slug: 'zammita',
-    aspect: 0.75,
+    aspect: 0.7465,
+    fit: 'contain',
+    zoom: 1.17,
     priceTbc: true,
     name: 'Zammita',
     kind: 'Traditional Moroccan blend',
     category: 'Spreads',
-    image: 'placeholder-zammita.svg',
+    image: 'zammita',
     tint: '#cbb894',
     tintInk: '#3a2f1c',
     ring: 'ZAMMITA · ',
@@ -217,12 +228,14 @@ export const products: Product[] = [
   },
   {
     slug: 'chebakia',
-    aspect: 0.75,
+    aspect: 0.7465,
+    fit: 'contain',
+    zoom: 1.3,
     priceTbc: true,
     name: 'Chebakia',
     kind: 'Traditional Moroccan sweet',
     category: 'Sweets',
-    image: 'placeholder-chebakia.svg',
+    image: 'chebakia',
     tint: '#d9a97f',
     tintInk: '#4d2410',
     ring: 'CHEBAKIA · ',
@@ -238,12 +251,14 @@ export const products: Product[] = [
   },
   {
     slug: 'argan-oil',
-    aspect: 0.75,
+    aspect: 0.7465,
+    fit: 'contain',
+    zoom: 1.21,
     priceTbc: true,
     name: 'Argan Oil',
     kind: 'Moroccan argan oil',
     category: 'Oils',
-    image: 'placeholder-argan-oil.svg',
+    image: 'argan-oil',
     tint: '#e3cf9d',
     tintInk: '#4a3a12',
     ring: 'ARGAN · ',
@@ -259,8 +274,8 @@ export const products: Product[] = [
   },
 ]
 
-/** The hero carousel order. */
-export const heroOrder = ['amlou-beldi', 'amlou-cashew', 'zammita', 'argan-oil', 'amlou-chocolate', 'chebakia', 'amlou-peanut']
+/** The hero carousel order: all seven products, the four amlou first. */
+export const heroOrder = ['amlou-beldi', 'amlou-cashew', 'amlou-chocolate', 'amlou-peanut', 'zammita', 'chebakia', 'argan-oil']
 
 export type Course = 'Starter' | 'Main' | 'Sweet'
 export type Recipe = {
@@ -420,6 +435,7 @@ export const productPage = {
   inStock: 'In stock, ships in 2 days',
   checking: 'Checking stock…',
   sizes: 'Size',
+  selected: 'Selected size',
   quantity: 'Quantity',
   ingredients: 'Ingredients',
   pairings: 'Good with',
@@ -440,6 +456,7 @@ export const bag = {
   freeOver: 60,
   freeNote: (left: string) => `Add ${left} more for free delivery`,
   freeDone: 'You have free delivery',
+  pendingNote: (n: number) => (n === 1 ? 'One item is awaiting its price and is not included in the total.' : `${n} items are awaiting their prices and are not included in the total.`),
   promoLabel: 'Promo code',
   promoHint: 'Try TAFUKT10',
   promoApply: 'Apply',

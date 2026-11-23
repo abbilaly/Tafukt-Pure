@@ -7,29 +7,35 @@ import { useContent } from '../lib/lang'
 import { CurvedText, Hill } from './Brand'
 import { Jar } from './Cards'
 
-// The hero: jars drifting over the maroon hillside, a ring of curved type
-// behind them. Click a jar (or use the arrow keys) to bring it forward; the
-// featured jar links to its product page. Positions are measured in a
-// 1440x900 design frame and scaled to the viewport.
+// The hero: exactly three jars at a time over the maroon hillside, a ring of
+// curved type behind them. The middle jar is the featured one: it drifts out to
+// the left and shrinks as the right-hand jar takes its place, while the next jar
+// slides in from beyond the right edge. Click a jar (or use the arrow keys) to
+// bring it forward; the featured jar links to its product page. Positions are
+// measured in a 1440x900 design frame and scaled to the viewport.
 
-type Slot = { cx: number; cy: number; h: number; rot: number; o: number; z: number }
-// Desktop slots, design-frame pixels. Index 0 is the featured jar.
-const WIDE: Record<number, Slot> = {
-  [-2]: { cx: -260, cy: 300, h: 360, rot: 22, o: 0, z: 1 },
-  [-1]: { cx: 112, cy: 382, h: 385, rot: 18, o: 1, z: 2 },
-  0: { cx: 566, cy: 474, h: 470, rot: 9, o: 1, z: 4 },
-  1: { cx: 1111, cy: 546, h: 440, rot: -7, o: 1, z: 3 },
-  2: { cx: 1404, cy: 626, h: 270, rot: 13, o: 1, z: 2 },
-  3: { cx: 1700, cy: 700, h: 220, rot: 16, o: 0, z: 1 },
+type Role = 'out' | 'exit' | 'left' | 'center' | 'right' | 'wait'
+type Slot = { cx: number; cy: number; h: number; rot: number; z: number }
+// Desktop slots, design-frame pixels. `out`, `exit` and `wait` sit beyond the
+// edges of the frame, where the section's overflow clips them, so the products
+// that are not on stage are never on screen.
+const WIDE: Record<Role, Slot> = {
+  out: { cx: -535, cy: 340, h: 300, rot: 14, z: 1 },
+  exit: { cx: 2065, cy: 330, h: 300, rot: -12, z: 1 },
+  left: { cx: 200, cy: 360, h: 336, rot: 16, z: 2 },
+  center: { cx: 700, cy: 462, h: 444, rot: 8, z: 4 },
+  right: { cx: 1150, cy: 520, h: 352, rot: -7, z: 3 },
+  wait: { cx: 2100, cy: 330, h: 300, rot: 12, z: 2 },
 }
-// Phone slots, in a 390x760 frame.
-const NARROW: Record<number, Slot> = {
-  [-2]: { cx: -200, cy: 420, h: 220, rot: 18, o: 0, z: 1 },
-  [-1]: { cx: 10, cy: 380, h: 240, rot: 14, o: 1, z: 2 },
-  0: { cx: 192, cy: 420, h: 370, rot: 6, o: 1, z: 4 },
-  1: { cx: 378, cy: 455, h: 240, rot: -8, o: 1, z: 3 },
-  2: { cx: 560, cy: 560, h: 200, rot: 12, o: 0, z: 2 },
-  3: { cx: 700, cy: 600, h: 180, rot: 14, o: 0, z: 1 },
+// Phone slots, in a 390x760 frame. The featured jar is more than twice the
+// height of the side jars, which tuck in behind it without being clipped.
+const NARROW: Record<Role, Slot> = {
+  out: { cx: -295, cy: 372, h: 150, rot: 16, z: 1 },
+  exit: { cx: 500, cy: 372, h: 150, rot: -12, z: 1 },
+  left: { cx: 82, cy: 366, h: 130, rot: 14, z: 2 },
+  center: { cx: 195, cy: 448, h: 282, rot: 6, z: 4 },
+  right: { cx: 308, cy: 366, h: 130, rot: -10, z: 3 },
+  wait: { cx: 529, cy: 372, h: 150, rot: 12, z: 2 },
 }
 
 function useSize<T extends HTMLElement>() {
@@ -50,8 +56,11 @@ export function HeroCarousel({ onScroll }: { onScroll: () => void }) {
   const jars = heroOrder.map((s) => products.find((p) => p.slug === s)).filter((p): p is Product => !!p)
   const [ref, { w, h }] = useSize<HTMLElement>()
   const [active, setActive] = useState(0)
+  const [dir, setDir] = useState<1 | -1>(1)
   const [turn, setTurn] = useState(0)
   const [paused, setPaused] = useState(false)
+  // False while a jar is on its way off the left edge; see the effect below.
+  const [settled, setSettled] = useState(true)
   const reduce = useReducedMotion()
   const n = jars.length
   const narrow = w < 768
@@ -66,11 +75,28 @@ export function HeroCarousel({ onScroll }: { onScroll: () => void }) {
 
   const go = useCallback(
     (delta: number) => {
-      setActive((a) => (a + delta + n) % n)
-      setTurn((t) => t - delta * 38)
+      if (!settled) return
+      // Take the shorter way round the ring, so clicking the left-hand jar is one
+      // step back rather than six steps forward.
+      let step = ((delta % n) + n) % n
+      if (step > n / 2) step -= n
+      if (step === 0) return
+      setDir(step > 0 ? 1 : -1)
+      setActive((a) => (a + step + n) % n)
+      setTurn((t) => t - step * 38)
+      setSettled(false)
     },
-    [n],
+    [n, settled],
   )
+
+  // Once a turn is over, the jar that left — still parked outside the left edge —
+  // is moved to the waiting spot outside the right edge, ready to come back in
+  // on a later turn. Both places are out of sight, so the switch is invisible.
+  useEffect(() => {
+    if (settled) return
+    const t = window.setTimeout(() => setSettled(true), 900)
+    return () => window.clearTimeout(t)
+  }, [settled])
 
   useEffect(() => {
     if (paused || reduce) return
@@ -85,7 +111,7 @@ export function HeroCarousel({ onScroll }: { onScroll: () => void }) {
   const ringR = narrow ? 170 : 430
   const ringSize = narrow ? 40 : 88
   const ringCy = narrow ? 640 : 856
-  const pill = frame.slots[0]
+  const pill = frame.slots.center
 
   return (
     <section
@@ -123,16 +149,22 @@ export function HeroCarousel({ onScroll }: { onScroll: () => void }) {
       </p>
 
       {jars.map((p, i) => {
-        let rel = (i - active + n) % n
-        if (rel > n / 2) rel -= n
-        const slot = frame.slots[Math.max(-2, Math.min(3, rel))]
-        const hidden = slot.o === 0
+        const rel = (i - active + n) % n
+        // Three roles hold the stage; the rest of the ring is parked outside the
+        // frame. A jar that has just left keeps its off-stage spot until the turn
+        // ends — on the left when the ring turns forward, on the right when it
+        // turns back — and only then waits out of sight for its next entrance.
+        const leaving = dir > 0 ? n - 2 : 2
+        const role: Role =
+          rel === 0 ? 'center' : rel === 1 ? 'right' : rel === n - 1 ? 'left' : rel === leaving && !settled ? (dir > 0 ? 'out' : 'exit') : 'wait'
+        const slot = frame.slots[role]
+        const hidden = role === 'out' || role === 'exit' || role === 'wait'
         const height = slot.h * u
-        const isFeatured = rel === 0
-        const style = { left: px(slot.cx), top: py(slot.cy), height, rotate: slot.rot, opacity: slot.o, zIndex: slot.z }
+        const isFeatured = role === 'center'
+        const style = { left: px(slot.cx), top: py(slot.cy), height, rotate: slot.rot, zIndex: slot.z }
         const jar = (
           <span className="block h-full w-full animate-bob" style={{ animationDelay: `${-i * 1.3}s` }}>
-            <Jar product={p} eager={Math.abs(rel) <= 1} className="h-full drop-shadow-[0_34px_30px_rgb(30_6_10/0.4)]" alt="" speak={!!p.label} />
+            <Jar product={p} eager priority={isFeatured} sizes="(min-width: 768px) 34vw, 62vw" className="h-full drop-shadow-[0_34px_30px_rgb(30_6_10/0.4)]" alt="" speak={!!p.label} />
           </span>
         )
         return (
@@ -141,7 +173,9 @@ export function HeroCarousel({ onScroll }: { onScroll: () => void }) {
             className="absolute -translate-x-1/2 -translate-y-1/2"
             initial={false}
             animate={style}
-            transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 70, damping: 18, mass: 0.9 }}
+            // The waiting spot is reached only while the jar is out of sight, so
+            // it is a jump rather than a journey across the hero.
+            transition={reduce || role === 'wait' ? { duration: 0 } : { type: 'spring', stiffness: 58, damping: 20, mass: 1 }}
             style={{ height, aspectRatio: p.aspect }}
           >
             {isFeatured ? (
@@ -160,7 +194,7 @@ export function HeroCarousel({ onScroll }: { onScroll: () => void }) {
       })}
 
       {/* "Discover the product", pinned beside the featured jar. */}
-      <motion.div key={`pill-${featured.slug}`} className="absolute z-10" style={{ left: px(pill.cx + (narrow ? -64 : 100)), top: py(pill.cy + (narrow ? 205 : 162)) }} initial={reduce ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.5 }}>
+      <motion.div key={`pill-${featured.slug}`} className="absolute z-10" style={{ left: px(pill.cx + (narrow ? -64 : 100)), top: py(pill.cy + (narrow ? 205 : 190)) }} initial={reduce ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45, duration: 0.5 }}>
         <Link
           to={`/shop/${featured.slug}`}
           className="inline-flex h-10 items-center gap-2 rounded-control bg-white px-3.5 text-[10.5px] font-bold uppercase tracking-[0.1em] text-flame-text shadow-pill transition-colors duration-200 hover:bg-flame-ink hover:text-white md:h-[30px]"

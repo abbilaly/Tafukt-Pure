@@ -29,7 +29,7 @@ export function Shop() {
     const needle = q.trim().toLowerCase()
     const out = products.filter((p) => (!cat || p.category === cat) && (!needle || `${p.name} ${p.kind} ${p.short} ${p.category}`.toLowerCase().includes(needle)))
     // Products whose price is still to be confirmed sit at the end either way.
-    const priceOf = (p: (typeof products)[number]) => (p.priceTbc ? Infinity : p.sizes[0].price)
+    const priceOf = (p: (typeof products)[number]) => (p.priceTbc || p.sizes[0].price === undefined ? Infinity : p.sizes[0].price)
     if (sort === 'price-asc') out.sort((a, b) => priceOf(a) - priceOf(b))
     if (sort === 'price-desc') out.sort((a, b) => priceOf(b) - priceOf(a))
     if (sort === 'name') out.sort((a, b) => a.name.localeCompare(b.name))

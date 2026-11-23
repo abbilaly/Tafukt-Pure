@@ -95,6 +95,8 @@ export function Bag() {
   }
 
   const pickup = shipping === 'pickup'
+  // Nothing in the bag has a published price yet: show no amount at all.
+  const unpriced = summary.subtotal === 0 && summary.pending > 0
   const left = copy.freeOver - (summary.subtotal - summary.discount)
   const promoLabel = promo ? (lang === 'ar' ? promoLabelsAr[promo] ?? PROMOS[promo]?.label : PROMOS[promo]?.label) : undefined
 
@@ -115,18 +117,18 @@ export function Bag() {
                 return (
                   <li key={i.slug + i.size} className="flex gap-4 py-5 sm:gap-6">
                     <Link to={`/shop/${i.slug}`} className="shrink-0 rounded-field">
-                      <JarTile product={i.product} className="size-24 rounded-field sm:size-28" />
+                      <JarTile product={i.product} sizes="112px" className="size-24 rounded-field sm:size-28" />
                     </Link>
                     <div className="flex flex-1 flex-col justify-between gap-3 sm:flex-row sm:items-center">
                       <div>
                         <p className="font-serif text-[24px] leading-tight text-wine">{p.name}</p>
                         <p className="text-[14px] text-muted">
-                          {p.kind} · {sizeLabel} · {format(i.sizeInfo.price)}
+                          {p.kind} · {sizeLabel} · {i.sizeInfo.price === undefined ? ui.pricePending : format(i.sizeInfo.price)}
                         </p>
                       </div>
                       <div className="flex items-center gap-3">
                         <QtyStepper size="sm" label={ui.quantityOf(p.name)} value={i.qty} onChange={(n) => setQty(i.slug, i.size, n)} />
-                        <p className="w-20 text-end font-semibold tabular-nums text-wine">{format(i.lineTotal)}</p>
+                        <p className="w-20 text-end font-semibold tabular-nums text-wine">{i.pricePending ? <span className="text-[13px] font-semibold text-muted">{ui.pricePending}</span> : format(i.lineTotal)}</p>
                         <IconButton label={ui.removeItem(p.name)} tone="cream" onClick={() => remove(i.slug, i.size)}>
                           <Trash2 className="size-4" aria-hidden />
                         </IconButton>
@@ -196,13 +198,13 @@ export function Bag() {
             <h2 id="sum-h" className="font-serif text-[30px]">
               {copy.summary}
             </h2>
-            <p className="mt-4 text-[14px] text-on-dark-muted">{pickup ? ui.collectNote : left > 0 ? copy.freeNote(format(left)) : copy.freeDone}</p>
+            <p className="mt-4 text-[14px] text-on-dark-muted">{unpriced ? copy.pendingNote(summary.pending) : pickup ? ui.collectNote : left > 0 ? copy.freeNote(format(left)) : copy.freeDone}</p>
             <dl className="mt-6 flex flex-col gap-3 border-t border-on-dark/20 pt-6 text-[15px]">
               <div className="flex justify-between">
                 <dt className="text-on-dark-muted">
                   {copy.subtotal} ({summary.count})
                 </dt>
-                <dd className="tabular-nums">{format(summary.subtotal)}</dd>
+                <dd className="tabular-nums">{unpriced ? '—' : format(summary.subtotal)}</dd>
               </div>
               {summary.discount > 0 && (
                 <div className="flex justify-between">
@@ -218,9 +220,11 @@ export function Bag() {
               </div>
               <div className="mt-2 flex items-baseline justify-between border-t border-on-dark/20 pt-4">
                 <dt className="font-serif text-[22px]">{copy.total}</dt>
-                <dd className="font-serif text-[34px] tabular-nums">{format(summary.total)}</dd>
+                <dd className="font-serif text-[34px] tabular-nums">{unpriced ? '—' : format(summary.total)}</dd>
               </div>
             </dl>
+
+            {summary.pending > 0 && !unpriced && <p className="mt-4 text-[13px] leading-relaxed text-on-dark-muted">{copy.pendingNote(summary.pending)}</p>}
 
             <div className="mt-6">
               {promo ? (
@@ -241,7 +245,7 @@ export function Bag() {
               {formError && <Notice tone="error">{formError}</Notice>}
             </div>
             <Button type="submit" size="lg" variant="cream" loading={sending} className="mt-4 w-full">
-              <Lock className="size-4" aria-hidden /> {copy.place} · {format(summary.total)}
+              <Lock className="size-4" aria-hidden /> {copy.place}{unpriced ? '' : ` · ${format(summary.total)}`}
             </Button>
             <p className="mt-3 text-center text-[13px] text-on-dark-muted">{copy.demo}</p>
           </div>
